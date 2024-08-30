@@ -1,13 +1,20 @@
 from pathlib import Path
+from .config import CONFIG
 
-# project paths
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT_ROOT / 'data'
-DACTYL_DIR = PROJECT_ROOT / ''
+class PathResolver:
+    # site
+    ALPHABET_PAGE = f'{CONFIG.SITE_NAME}/{CONFIG.LANG_ALIAS}/alphabet/'
 
-DATA_DIR.mkdir(exist_ok=True)
+    # project paths
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    LOG_DIR = PROJECT_ROOT / 'logs'
+    DATA_DIR = PROJECT_ROOT / 'data' / CONFIG.LANG_ALIAS
+    DACTYL_DIR = DATA_DIR / 'dactyl'
 
-# site
-SITE_NAME = 'https://spreadthesign.com'
-LANG_PREFIX = 'uk.ua'
-ALPHABET_PREFIX = 'alphabet'
+    def __init__(self):
+        self.LOG_DIR.mkdir(exist_ok=True)
+        self.DATA_DIR.mkdir(exist_ok=True)
+        self.DACTYL_DIR.mkdir(exist_ok=True)
+
+PATH_RESOLVER = PathResolver()
+
