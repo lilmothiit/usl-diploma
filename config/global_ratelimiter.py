@@ -1,2 +1,4 @@
 from requests_ratelimiter import LimiterSession
-GLOBAL_SESSION = LimiterSession(per_second=5)
+from .config import CONFIG
+
+GLOBAL_SESSION = LimiterSession(per_second=CONFIG.REQUESTS_PER_SECOND)

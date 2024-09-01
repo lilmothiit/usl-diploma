@@ -1,15 +1,16 @@
 import logging
 from logging.handlers import RotatingFileHandler
+
 from .config import CONFIG
-from .path_resolver import PATH_RESOLVER as repath
+from .path_resolver import PATH_RESOLVER as REPATH
 
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(filename)s | %(levelname)s | %(message)s',  # Include filename
+    level=CONFIG.LOG_LEVEL,
+    format=CONFIG.LOG_FORMAT,  # Include filename
     handlers=[
         RotatingFileHandler(
-            repath.LOG_DIR / 'project.log',
+            REPATH.LOG_DIR / 'project.log',
             maxBytes=20000,
             backupCount=10
         ),
@@ -18,4 +19,3 @@ logging.basicConfig(
 )
 
 GLOBAL_LOGGER = logging.getLogger('ProjectLogger')
-GLOBAL_LOGGER.setLevel(CONFIG.LOG_LEVEL)
