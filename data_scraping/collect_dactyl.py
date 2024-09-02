@@ -1,12 +1,8 @@
-import os
-from bs4 import BeautifulSoup
+from util.global_logger import GLOBAL_LOGGER as LOG
+from util.path_resolver import PATH_RESOLVER as REPATH
 
-from config.config import CONFIG
-from config.global_logger import GLOBAL_LOGGER as LOG
-from config.global_ratelimiter import GLOBAL_SESSION as SESH
-from config.path_resolver import PATH_RESOLVER as REPATH
-
-from util.scraping import request_page_contents
+from util.scraping import request_page_contents, scrape_video
+from util.annotator import Annotator
 
 
 
@@ -16,8 +12,10 @@ def collect_dactyl():
 
     contents = request_page_contents(page, tag='ul', tag_class='alphabet-letter-list')
     if not contents:
-        LOG.warning('No alphabet found')
+        LOG.error('No alphabet found')
         return
+
+    annotator = Annotator(REPATH.ANNOTATION_DIR / 'dactyl.csv')
 
     for a in contents.find_all('a', href=True):
         LOG.info(f'Scraping "{a.text.strip()}" : {a["href"]}')
@@ -28,9 +26,10 @@ def collect_dactyl():
             continue
 
         video_src = video_div.find('video')['src']
-
-        #a.text
-        #a['href']
+        output_path = REPATH.DACTYL_DIR / REPATH.resolve_file_name(video_src)
+        output_rel_path = REPATH.resolve_project_relative_path(output_path)
+        scrape_video(video_src, output_path)
+        annotator.record(line=[a.text.strip(), 'dactyl', video_src, output_rel_path])
 
 
 if __name__ == '__main__':

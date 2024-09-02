@@ -1,8 +1,8 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-from .config import CONFIG
-from .path_resolver import PATH_RESOLVER as REPATH
+from config.config import CONFIG
+from util.path_resolver import PATH_RESOLVER as REPATH
 
 
 logging.basicConfig(
