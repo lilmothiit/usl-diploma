@@ -34,6 +34,6 @@ def collect_dactyl():
             continue
 
         scrape_file(video_src, output_abs_path)
-        annotator.record(line=[a.text.strip(), 'dactyl', video_src, output_rel_path])
+        annotator.record(line=[a.text.strip(), None, 'dactyl', video_src, output_rel_path])
 
 

@@ -3,7 +3,7 @@ import csv
 
 
 class Annotator:
-    DEFAULT_HEADER = ['word', 'category', 'site_path', 'local_path']
+    DEFAULT_HEADER = ['word', 'part_of_speech', 'category', 'site_path', 'local_path']
 
     def __init__(self, file_path, header=None):
         if header is None:
@@ -16,7 +16,7 @@ class Annotator:
         if not os.path.exists(self.file_path):
             self.writer.writerow(header)
 
-    def record(self, line=None, word=None, category=None, site_path=None, local_path=None):
+    def record(self, line=None, word=None, part_of_speech=None, category=None, site_path=None, local_path=None):
         if line:
             if isinstance(line, (list, tuple)):
                 self.writer.writerow(line)
@@ -26,9 +26,9 @@ class Annotator:
                 raise ValueError("Line must be a list, tuple, or string")
 
         else:
-            if (word, category, site_path, local_path) == (None, None, None, None):
+            if (word, part_of_speech, category, site_path, local_path) == (None, None, None, None, None):
                 raise ValueError("Cannot record a row if all values are None")
-            self.writer.writerow([word, category, site_path, local_path])
+            self.writer.writerow([word, part_of_speech, category, site_path, local_path])
 
     def __del__(self):
         if self.csv_file:
