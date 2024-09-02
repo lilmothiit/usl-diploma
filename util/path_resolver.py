@@ -1,5 +1,5 @@
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from config.config import CONFIG
 
 
@@ -23,15 +23,21 @@ class PathResolver:
 
     @staticmethod
     def resolve_relative_url(relative_url):
-        return urlparse(CONFIG.SITE_NAME, relative_url)
-
-    @staticmethod
-    def resolve_file_name(url):
-        parsed_url = urlparse(url)
-        return parsed_url.path.split('/')[-1]
+        return urljoin(CONFIG.SITE_NAME, relative_url)
 
     def resolve_project_relative_path(self, absolute):
         return Path(absolute).relative_to(self.PROJECT_ROOT)
+
+    @staticmethod
+    def get_file_name(url):
+        parsed_url = urlparse(url)
+        return parsed_url.path.split('/')[-1]
+
+    def exists(self, path):
+        path = Path(path)
+        if not path.is_absolute():
+            path = self.PROJECT_ROOT / path
+        return path.exists()
 
 
 PATH_RESOLVER = PathResolver()

@@ -42,7 +42,7 @@ def request_page_contents(url, tag=None, tag_class=None, output_file=None):
     return contents
 
 
-def scrape_video(src, output_file):
+def scrape_file(src, output_file):
     response = SESH.get(src, headers=CONFIG.HEADERS, cookies=CONFIG.COOKIES)
     if response.status_code != 200:
         LOG.warning(f'Failed to fetch video from {src}')

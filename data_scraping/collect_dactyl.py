@@ -1,7 +1,7 @@
 from util.global_logger import GLOBAL_LOGGER as LOG
 from util.path_resolver import PATH_RESOLVER as REPATH
 
-from util.scraping import request_page_contents, scrape_video
+from util.scraping import request_page_contents, scrape_file
 from util.annotator import Annotator
 
 
@@ -18,7 +18,7 @@ def collect_dactyl():
     annotator = Annotator(REPATH.ANNOTATION_DIR / 'dactyl.csv')
 
     for a in contents.find_all('a', href=True):
-        LOG.info(f'Scraping "{a.text.strip()}" : {a["href"]}')
+        LOG.info(f'Scraping "{a.text.strip()}" at {a["href"]}')
         video_div = request_page_contents(REPATH.resolve_relative_url(a['href']),
                                           tag='div', tag_class='alphabet-letter-video')
         if not video_div:
@@ -26,11 +26,14 @@ def collect_dactyl():
             continue
 
         video_src = video_div.find('video')['src']
-        output_path = REPATH.DACTYL_DIR / REPATH.resolve_file_name(video_src)
-        output_rel_path = REPATH.resolve_project_relative_path(output_path)
-        scrape_video(video_src, output_path)
+        output_abs_path = REPATH.DACTYL_DIR / REPATH.get_file_name(video_src)
+        output_rel_path = REPATH.resolve_project_relative_path(output_abs_path)
+
+        if REPATH.exists(output_abs_path):
+            LOG.info(f'file {output_rel_path} already exists')
+            continue
+
+        scrape_file(video_src, output_abs_path)
         annotator.record(line=[a.text.strip(), 'dactyl', video_src, output_rel_path])
 
 
-if __name__ == '__main__':
-    collect_dactyl()

@@ -11,10 +11,10 @@ class Annotator:
 
         self.file_path = file_path
         self.csv_file = open(self.file_path, 'a', newline='', encoding='utf-8')
-        self.writer = csv.writer(self.csv_file, delimiter=';', quotechar='"')
+        self.writer = csv.writer(self.csv_file, delimiter=';')
 
         if not os.path.exists(self.file_path):
-            self.writer.writerow([''])
+            self.writer.writerow(header)
 
     def record(self, line=None, word=None, category=None, site_path=None, local_path=None):
         if line:
