@@ -12,7 +12,8 @@ logging.basicConfig(
         RotatingFileHandler(
             REPATH.LOG_DIR / 'project.log',
             maxBytes=20000,
-            backupCount=10
+            backupCount=10,
+            encoding='utf-8'
         ),
         logging.StreamHandler()
     ]

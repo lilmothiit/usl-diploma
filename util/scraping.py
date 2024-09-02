@@ -43,5 +43,6 @@ def request_page_contents(url, tag=None, tag_class=None, html_save_path=None):
 
     return contents
 
-def scrape_video(link, div_class=''):
+def scrape_video(src, save_path=None):
+
     pass
