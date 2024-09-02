@@ -3,7 +3,7 @@ import logging
 
 class ProjectConfig:
     # ======================================== APP  OPTIONS ========================================
-    LOG_LEVEL = logging.DEBUG
+    LOG_LEVEL = logging.INFO
     LOG_FORMAT = '%(asctime)s | %(filename)s | %(levelname)s | %(message)s'
     REQUESTS_PER_SECOND = 5
 

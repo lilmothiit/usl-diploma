@@ -5,13 +5,12 @@ from data_scraping.scraping_util import request_page_contents, scrape_file
 from util.annotator import Annotator
 
 
-def collect_dactyl():
-    page = REPATH.ALPHABET_PAGE
-    LOG.info('Collecting alphabet from ' + page)
+def page_scraper(page, *args):
+    LOG.info(f'Collecting from {page}')
 
-    contents = request_page_contents(page, tag='ul', tag_class='alphabet-letter-list')
+    contents = request_page_contents(page, *args)
     if not contents:
-        LOG.error('No alphabet found')
+        LOG.error('Requested content not found')
         return
 
     annotator = Annotator(REPATH.ANNOTATION_DIR / 'dactyl.csv')
