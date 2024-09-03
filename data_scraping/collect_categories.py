@@ -15,5 +15,5 @@ def collect_categories():
         return
 
     # annotator = Annotator(REPATH.ANNOTATION_DIR / 'words.csv')
-    # TODO
+
 
