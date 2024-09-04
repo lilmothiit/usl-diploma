@@ -1,3 +1,5 @@
+from config.config import CONFIG
+
 from util.global_logger import GLOBAL_LOGGER as LOG
 from util.path_resolver import PATH_RESOLVER as REPATH
 
@@ -6,7 +8,9 @@ from util.annotator import Annotator
 
 
 def find_all_videos(soup):
-    video_tag = soup.find('video')
+    video_tag = soup.find('video', recursive=True)
+    if video_tag is None:
+        return
     video_column = video_tag.parent
     nav_bar = video_column.find('ul', class_='nav')
 
@@ -15,7 +19,10 @@ def find_all_videos(soup):
 
     video_srcs = []
     for a in nav_bar.find_all('a', href=True):
-        video_src = request_page_contents(REPATH.resolve_relative_url(a['href']), tag='video')['src']
+        video = request_page_contents(REPATH.resolve_relative_url(a['href']), tag='video')
+        if not video:
+            continue
+        video_src = video['src']
         video_srcs.append(video_src)
 
     return video_srcs
@@ -43,6 +50,10 @@ def scrape_category_page(url, category, annotator):
             continue
 
         video_srcs = find_all_videos(word_content)
+        if not video_srcs:
+            LOG.warning(f'No video sources found for "{word}" ({part_of_speech}) at {word_link}')
+            continue
+
         for video_src in video_srcs:
             output_abs_path = REPATH.WORD_DIR / REPATH.get_file_name(video_src)
             output_rel_path = REPATH.resolve_project_relative_path(output_abs_path)
@@ -84,9 +95,13 @@ def collect_categories():
     LOG.info('Initiating word scraping')
     annotator = Annotator(REPATH.ANNOTATION_DIR / 'words.csv')
 
+    skipped = False
     for li in unordered_list.find_all('li'):
         a = li.find('a', href=True)
         category = a.text.strip()
+        if not skipped and CONFIG.SKIP_TO_CATEGORY and CONFIG.SKIP_TO_CATEGORY == category:
+            continue
+
         start_page = REPATH.resolve_relative_url(a['href'])
 
         LOG.info(f'Starting word scraping for "{category}" at {start_page}')

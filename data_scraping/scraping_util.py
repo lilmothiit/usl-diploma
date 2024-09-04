@@ -46,9 +46,15 @@ def request_page_contents(url, tag=None, tag_class=None, tag_id=None):
     if tag is None:
         return soup
 
-    contents = soup.find(tag, class_=tag_class, id=tag_id)
+    attrs = {}
+    if tag_class:
+        attrs['class'] = tag_class
+    if tag_id:
+        attrs['id'] = tag_id
+
+    contents = soup.find(tag, attrs=attrs, recursive=True)
     if not contents:
-        LOG.warning(f'Failed to find tag <{tag}> of class "{tag_class}" and id "{tag_id}" for {url}')
+        LOG.warning(f'Failed to find tag <{tag}> of class "{tag_class}" and id "{tag_id}" at {url}')
         return
 
     return contents
