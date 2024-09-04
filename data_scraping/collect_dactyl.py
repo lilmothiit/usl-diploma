@@ -21,7 +21,7 @@ def collect_dactyl():
         video_div = request_page_contents(REPATH.resolve_relative_url(a['href']),
                                           tag='div', tag_class='alphabet-letter-video')
         if not video_div:
-            LOG.warning(f'Failed to collect video from "{a.text.strip()}" : {a["href"]}')
+            LOG.error(f'Failed to collect video for "{a.text.strip()}" at {a["href"]}')
             continue
 
         video_src = video_div.find('video')['src']
@@ -29,9 +29,8 @@ def collect_dactyl():
         output_rel_path = REPATH.resolve_project_relative_path(output_abs_path)
 
         if REPATH.exists(output_abs_path):
-            LOG.info(f'file {output_rel_path} already exists')
-            continue
-
-        scrape_file(video_src, output_abs_path)
-        annotator.record(line=[a.text.strip(), None, 'dactyl', video_src, output_rel_path])
+            LOG.info(f'File {output_rel_path} already exists')
+        else:
+            scrape_file(video_src, output_abs_path)
+            annotator.record(line=[a.text.strip(), None, 'dactyl', video_src, output_rel_path])
 

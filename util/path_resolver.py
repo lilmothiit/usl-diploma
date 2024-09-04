@@ -1,5 +1,5 @@
 from pathlib import Path
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, parse_qs, urlencode, urlunparse
 from config.config import CONFIG
 
 
@@ -26,6 +26,32 @@ class PathResolver:
     @staticmethod
     def resolve_relative_url(relative_url):
         return urljoin(CONFIG.SITE_NAME, relative_url)
+
+    @staticmethod
+    def update_url_query(site_url, new_query):
+        parsed_url = urlparse(site_url)
+        existing_query_params = parse_qs(parsed_url.query)
+        new_query_params = parse_qs(new_query)
+        existing_query_params.update(new_query_params)
+        updated_query = urlencode(existing_query_params, doseq=True)
+        updated_url = urlunparse((
+            parsed_url.scheme,
+            parsed_url.netloc,
+            parsed_url.path,
+            parsed_url.params,
+            updated_query,
+            parsed_url.fragment
+        ))
+
+        return updated_url
+
+    @staticmethod
+    def join_url_query(base_url, query_string):
+        if not query_string.startswith('?'):
+            query_string = '?' + query_string
+
+        full_url = base_url + query_string
+        return full_url
 
     def resolve_project_relative_path(self, absolute):
         return Path(absolute).relative_to(self.PROJECT_ROOT)
