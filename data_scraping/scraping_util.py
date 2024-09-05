@@ -5,37 +5,6 @@ from util.global_logger import GLOBAL_LOGGER as LOG
 from util.global_ratelimiter import GLOBAL_SESSION as SESH
 
 
-def request_page(url):
-    """
-    Requests the given URL. Returns a BeautifulSoup of the page.
-
-    :param url:         URL to request.
-    :return:            None | BeautifulSoup
-    """
-    response = SESH.get(url, headers=CONFIG.HEADERS, cookies=CONFIG.COOKIES)
-    if response.status_code != 200:
-        LOG.warning(f'Failed to fetch page {url}')
-        return
-
-    content_type = response.headers.get('Content-Type')
-    if content_type:
-        # Check if 'charset' is specified in the Content-Type header
-        content_type_parts = content_type.split('charset=')
-        if len(content_type_parts) > 1:
-            # Set the encoding to the server-specified charset
-            server_encoding = content_type_parts[1].strip()
-            response.encoding = server_encoding
-        else:
-            # Fallback to apparent encoding if charset isn't specified
-            response.encoding = response.apparent_encoding
-    else:
-        # Fallback to apparent encoding if no Content-Type header is available
-        response.encoding = response.apparent_encoding
-
-    soup = BeautifulSoup(response.content.decode(response.encoding, errors='replace'), 'html.parser')
-    return soup
-
-
 def request_page_contents(url, tag=None, tag_class=None, tag_id=None):
     """
     Requests the given URL. Returns a BeautifulSoup of the page.
