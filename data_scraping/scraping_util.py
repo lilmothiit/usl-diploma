@@ -16,6 +16,7 @@ def request_page(url):
     if response.status_code != 200:
         LOG.warning(f'Failed to fetch page {url}')
         return
+    response.encoding = response.apparent_encoding
 
     soup = BeautifulSoup(response.content, 'html.parser')
     return soup
@@ -40,6 +41,7 @@ def request_page_contents(url, tag=None, tag_class=None, tag_id=None):
     if response.status_code != 200:
         LOG.warning(f'Failed to fetch page {url}')
         return
+    response.encoding = response.apparent_encoding
 
     soup = BeautifulSoup(response.content, 'html.parser')
 
