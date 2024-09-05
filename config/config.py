@@ -17,8 +17,8 @@ class ProjectConfig:
     COOKIES = {'sts_preferences': f'{{"language_choice_message_shown": true, "last_choosen_language": "{LANG_ALIAS}", "show_more_languages": false}}'}
     HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'Referer': 'https://spreadthesign.com/'}
 
-    RESUME_FROM_CATEGORY = 'мова'       # Resuming from a category also skips dactyl scraping
-    RESUME_FROM_CATEGORY_PAGE = 30
+    RESUME_FROM_CATEGORY = None       # Resuming from a category also skips dactyl scraping
+    RESUME_FROM_CATEGORY_PAGE = None
 
 
 CONFIG = ProjectConfig()
