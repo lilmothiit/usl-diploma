@@ -106,12 +106,12 @@ def collect_categories():
         start_page = REPATH.resolve_relative_url(a['href'])
 
         # if we haven't skipped yet, need to skip, and the current category is wrong -> skip
-        if skip_page and CONFIG.SKIP_TO_CATEGORY and CONFIG.SKIP_TO_CATEGORY != category:
+        if skip_page and CONFIG.RESUME_FROM_CATEGORY and CONFIG.RESUME_FROM_CATEGORY != category:
             LOG.info(f'Skipping "{category}" at {start_page})')
             continue
 
         # if we found the specified category and used the page number, unset it, stopping the skipping
-        if CONFIG.SKIP_TO_CATEGORY == category:
+        if CONFIG.RESUME_FROM_CATEGORY == category:
             LOG.info(f'Starting word scraping for "{category}" (page {skip_page}) at {start_page}')
             category_scraper(start_page, skip_page, category, annotator)
             skip_page = None
@@ -120,4 +120,3 @@ def collect_categories():
         # in all other cases, scrape normally
         LOG.info(f'Starting word scraping for "{category}" at {start_page}')
         category_scraper(start_page, None, category, annotator)
-
