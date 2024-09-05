@@ -67,8 +67,12 @@ def scrape_category_page(url, category, annotator):
     return words_list
 
 
-def category_scraper(start_page, *args):
-    url = start_page
+def category_scraper(start_page, skip_to_page, *args):
+    if skip_to_page:
+        url = REPATH.join_url_query(start_page, f'p={skip_to_page}')
+    else:
+        url = start_page
+
     while True:
         search_result = scrape_category_page(url, *args)
         pager = search_result.find('div', class_='search-pager-next', recursive=True)
@@ -95,15 +99,25 @@ def collect_categories():
     LOG.info('Initiating word scraping')
     annotator = Annotator(REPATH.ANNOTATION_DIR / 'words.csv')
 
-    skipped = False
+    skip_page = CONFIG.RESUME_FROM_CATEGORY_PAGE
     for li in unordered_list.find_all('li'):
         a = li.find('a', href=True)
         category = a.text.strip()
-        if not skipped and CONFIG.SKIP_TO_CATEGORY and CONFIG.SKIP_TO_CATEGORY == category:
-            continue
-
         start_page = REPATH.resolve_relative_url(a['href'])
 
+        # if we haven't skipped yet, need to skip, and the current category is wrong -> skip
+        if skip_page and CONFIG.SKIP_TO_CATEGORY and CONFIG.SKIP_TO_CATEGORY != category:
+            LOG.info(f'Skipping "{category}" at {start_page})')
+            continue
+
+        # if we found the specified category and used the page number, unset it, stopping the skipping
+        if CONFIG.SKIP_TO_CATEGORY == category:
+            LOG.info(f'Starting word scraping for "{category}" (page {skip_page}) at {start_page}')
+            category_scraper(start_page, skip_page, category, annotator)
+            skip_page = None
+            continue
+
+        # in all other cases, scrape normally
         LOG.info(f'Starting word scraping for "{category}" at {start_page}')
-        category_scraper(start_page, category, annotator)
+        category_scraper(start_page, None, category, annotator)
 

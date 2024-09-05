@@ -1,3 +1,5 @@
+from config.config import CONFIG
+
 from util.global_logger import GLOBAL_LOGGER as LOG
 from util.path_resolver import PATH_RESOLVER as REPATH
 
@@ -6,6 +8,10 @@ from util.annotator import Annotator
 
 
 def collect_dactyl():
+    if CONFIG.SKIP_TO_CATEGORY:
+        LOG.info('Skipping scraping dactyl')
+        return
+
     page = REPATH.ALPHABET_PAGE
     LOG.info('Collecting alphabet from ' + page)
 
