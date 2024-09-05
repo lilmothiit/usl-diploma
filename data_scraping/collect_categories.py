@@ -39,7 +39,9 @@ def scrape_category_page(url, category, annotator):
     for div in words_list.find_all('div', class_='search-result'):
         a = div.find('a', href=True)
         word = a.contents[0].strip()
-        part_of_speech = a.find('small').text.strip()
+        part_of_speech = a.find('small')
+        if part_of_speech:
+            part_of_speech = part_of_speech.text.strip()
         word_link = a["href"]
         LOG.info(f'Scraping "{word}" ({part_of_speech}) at {word_link}')
 
