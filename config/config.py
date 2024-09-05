@@ -10,6 +10,7 @@ class ProjectConfig:
     REQUESTS_PER_SECOND = 3
 
     # ====================================== SCRAPING OPTIONS ======================================
+    SCRAPING_ENABLED = False
     SITE_NAME = 'https://spreadthesign.com'     # don't change
     LANG_ALIAS = 'uk.ua'                        # change according to site aliases
 
@@ -17,7 +18,8 @@ class ProjectConfig:
     COOKIES = {'sts_preferences': f'{{"language_choice_message_shown": true, "last_choosen_language": "{LANG_ALIAS}", "show_more_languages": false}}'}
     HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'Referer': 'https://spreadthesign.com/'}
 
-    RESUME_FROM_CATEGORY = None       # Resuming from a category also skips dactyl scraping
+    # Resuming from a category also skips dactyl scraping
+    RESUME_FROM_CATEGORY = None
     RESUME_FROM_CATEGORY_PAGE = None
 
 
