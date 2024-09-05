@@ -8,7 +8,7 @@ from util.annotator import Annotator
 
 
 def collect_dactyl():
-    if CONFIG.SKIP_TO_CATEGORY:
+    if CONFIG.RESUME_FROM_CATEGORY:
         LOG.info('Skipping scraping dactyl')
         return
 
