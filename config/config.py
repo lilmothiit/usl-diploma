@@ -4,8 +4,9 @@ import logging
 class ProjectConfig:
     # ======================================== APP  OPTIONS ========================================
     LOG_LEVEL = logging.INFO
+    LOG_ALL_EXCEPTIONS = True
     LOG_FORMAT = '%(asctime)s | %(levelname)10s | %(filename)30s:%(lineno)4s | %(funcName)30s() | %(message)s'
-    LOG_FILE_SIZE = 10*1024*1024
+    LOG_FILE_SIZE = 2*1024*1024
     LOG_FILE_COUNT = 10
     REQUESTS_PER_SECOND = 3
 
@@ -18,9 +19,12 @@ class ProjectConfig:
     COOKIES = {'sts_preferences': f'{{"language_choice_message_shown": true, "last_choosen_language": "{LANG_ALIAS}", "show_more_languages": false}}'}
     HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'Referer': 'https://spreadthesign.com/'}
 
-    # Resuming from a category also skips dactyl scraping
+    # resuming from a category also skips dactyl scraping
     RESUME_FROM_CATEGORY = None
     RESUME_FROM_CATEGORY_PAGE = None
+
+    # ===================================== ANNOTATION CLEANUP =====================================
+    ANNOTATION_CLEANUP_ENABLED = True
 
 
 CONFIG = ProjectConfig()

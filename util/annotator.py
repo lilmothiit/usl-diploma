@@ -1,6 +1,8 @@
 import os
 import csv
 
+from util.global_logger import GLOBAL_LOGGER as LOG
+
 
 class Annotator:
     DEFAULT_HEADER = ['word', 'part_of_speech', 'category', 'site_path', 'local_path']
@@ -13,8 +15,10 @@ class Annotator:
         self.csv_file = open(self.file_path, 'a', newline='', encoding='utf-8')
         self.writer = csv.writer(self.csv_file, delimiter=';')
 
-        if not os.path.exists(self.file_path):
-            self.writer.writerow(header)
+        # if the opened file is empty, write the header row
+        with open(self.file_path, 'r') as file_obj:
+            if not file_obj.read(1):
+                self.writer.writerow(header)
 
     def record(self, line=None, word=None, part_of_speech=None, category=None, site_path=None, local_path=None):
         if line:
@@ -23,11 +27,12 @@ class Annotator:
             elif isinstance(line, str):
                 self.writer.writerow([line])
             else:
-                raise ValueError("Line must be a list, tuple, or string")
+                LOG.error(f"Annotation line must be a list, tuple, or string. Got {type(line)}")
 
         else:
             if (word, part_of_speech, category, site_path, local_path) == (None, None, None, None, None):
-                raise ValueError("Cannot record a row if all values are None")
+                LOG.error("Annotator cannot record a row if all values are None")
+                return
             self.writer.writerow([word, part_of_speech, category, site_path, local_path])
 
     def __del__(self):

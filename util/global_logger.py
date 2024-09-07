@@ -1,3 +1,4 @@
+import sys
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -20,3 +21,9 @@ logging.basicConfig(
 )
 
 GLOBAL_LOGGER = logging.getLogger('ProjectLogger')
+
+if CONFIG.LOG_ALL_EXCEPTIONS:
+    def log_all_exceptions(exctype, value, tb):
+        GLOBAL_LOGGER.error(f"Uncaught exception: {exctype.__name__}({value})", exc_info=(exctype, value, tb))
+
+    sys.excepthook = log_all_exceptions

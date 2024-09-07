@@ -3,6 +3,7 @@ from util.global_logger import GLOBAL_LOGGER as log
 
 from data_scraping.collect_dactyl import collect_dactyl
 from data_scraping.collect_categories import collect_categories
+from data_scraping.annotation_cleanup import clean_annotations
 
 
 def main():
@@ -10,6 +11,8 @@ def main():
     if CONFIG.SCRAPING_ENABLED:
         collect_dactyl()
         collect_categories()
+    if CONFIG.ANNOTATION_CLEANUP_ENABLED:
+        clean_annotations()
     log.info('='*51 + 'APP END' + '='*51 + '\n')
 
 
