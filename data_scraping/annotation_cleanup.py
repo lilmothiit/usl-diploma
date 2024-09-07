@@ -37,7 +37,7 @@ def _get_video_metadata(video_path):
             if track.track_type == "Video":
                 return track.duration, track.width, track.height, track.frame_rate
     except Exception as e:
-        LOG.exception(f"Failed to parse {video_path}: {e}")
+        LOG.exception(f"Failed to parse {e}")
         return None, None, None, None
 
 
