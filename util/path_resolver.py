@@ -13,19 +13,19 @@ class PathResolver:
     LOG_DIR = PROJECT_ROOT / 'logs'
     DATA_DIR = PROJECT_ROOT / 'data' / CONFIG.LANG_ALIAS
     ANNOTATION_DIR = DATA_DIR / 'annotation'
-    RAWS_DIR = DATA_DIR / 'raw'
-    POSE_DIR = DATA_DIR / 'pose'
-    DACTYL = 'dactyl'
-    WORDS = 'words'
+    DACTYL_RAW_DIR = DATA_DIR / 'raw' / 'dactyl'
+    DACTYL_POSE_DIR = DATA_DIR / 'pose' / 'dactyl'
+    WORD_RAW_DIR = DATA_DIR / 'raw' / 'words'
+    WORD_POSE_DIR = DATA_DIR / 'pose' / 'words'
 
     def __init__(self):
         self.LOG_DIR.mkdir(parents=True, exist_ok=True)
         self.DATA_DIR.mkdir(parents=True, exist_ok=True)
         self.ANNOTATION_DIR.mkdir(parents=True, exist_ok=True)
-        (self.RAWS_DIR / self.DACTYL).mkdir(parents=True, exist_ok=True)
-        (self.POSE_DIR / self.DACTYL).mkdir(parents=True, exist_ok=True)
-        (self.RAWS_DIR / self.WORDS).mkdir(parents=True, exist_ok=True)
-        (self.POSE_DIR / self.WORDS).mkdir(parents=True, exist_ok=True)
+        self.DACTYL_RAW_DIR.mkdir(parents=True, exist_ok=True)
+        self.DACTYL_POSE_DIR.mkdir(parents=True, exist_ok=True)
+        self.WORD_RAW_DIR.mkdir(parents=True, exist_ok=True)
+        self.WORD_POSE_DIR.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def resolve_relative_url(relative_url):

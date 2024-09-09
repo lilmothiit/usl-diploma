@@ -31,7 +31,7 @@ def collect_dactyl():
             continue
 
         video_src = video_div.find('video')['src']
-        output_abs_path = REPATH.RAWS_DIR / REPATH.DACTYL / REPATH.get_file_name(video_src)
+        output_abs_path = REPATH.DACTYL_RAW_DIR / REPATH.get_file_name(video_src)
         output_rel_path = REPATH.resolve_project_relative_path(output_abs_path)
 
         if REPATH.exists(output_abs_path):

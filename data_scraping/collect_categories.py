@@ -57,7 +57,7 @@ def scrape_category_page(url, category, annotator):
             continue
 
         for video_src in video_srcs:
-            output_abs_path = REPATH.RAWS_DIR / REPATH.WORDS / REPATH.get_file_name(video_src)
+            output_abs_path = REPATH.WORD_RAW_DIR / REPATH.get_file_name(video_src)
             output_rel_path = REPATH.resolve_project_relative_path(output_abs_path)
             annotator.record(line=[word, part_of_speech, category, video_src, output_rel_path])
 
