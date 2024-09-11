@@ -1,4 +1,6 @@
+import os
 import cv2
+import json
 import pandas as pd
 import mediapipe.python.solutions.drawing_utils as mp_drawing
 import mediapipe.python.solutions.drawing_styles as mp_drawing_styles
@@ -11,13 +13,9 @@ from util.path_resolver import PATH_RESOLVER as REPATH
 import warnings
 warnings.filterwarnings("ignore", module='mediapipe')
 warnings.filterwarnings("ignore", module='tensorflow')
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-_HOLISTIC_ARGS = {
-    'static_image_mode': False,
-    'model_complexity': 2,
-    'min_detection_confidence': 0.9,
-    'min_tracking_confidence': 0.9
-}
+_HOLISTIC_ARGS = CONFIG.POSE_ESTIMATION_OPTIONS
 _ANNOTATION_STYLES = {
     'pose_landmarks': (mp_holistic.POSE_CONNECTIONS, mp_drawing_styles.get_default_pose_landmarks_style()),
     'face_landmarks': (mp_holistic.FACEMESH_TESSELATION, mp_drawing_styles.get_default_face_mesh_tesselation_style()),
@@ -74,8 +72,35 @@ def holistic_process(input_, output):
                 out_vid.write(image)
 
     in_vid.release()
-    out_vid.release()
+    if out_vid is not None:
+        out_vid.release()
     return results
+
+
+def serialize_solution_output(frames):
+    def serialize_landmarks(landmarks):
+        if landmarks is None:
+            return None
+        return [
+            {
+                "x": landmark.x,
+                "y": landmark.y,
+                "z": getattr(landmark, 'z', None),
+                "visibility": getattr(landmark, 'visibility', None)
+            }
+            for landmark in landmarks.landmark
+        ]
+
+    def serialize_frame(frame):
+        return {
+            "face_landmarks": serialize_landmarks(frame.face_landmarks),
+            "pose_landmarks": serialize_landmarks(frame.pose_landmarks),
+            "pose_world_landmarks": serialize_landmarks(frame.pose_world_landmarks),
+            "left_hand_landmarks": serialize_landmarks(frame.left_hand_landmarks),
+            "right_hand_landmarks": serialize_landmarks(frame.right_hand_landmarks)
+        }
+
+    return [serialize_frame(frame) for frame in frames]
 
 
 def pose_estimation():
@@ -87,15 +112,21 @@ def pose_estimation():
 
         if CONFIG.VIDEO_ANNOTATION_ENABLED:
             out_video_path = REPATH.DACTYL_POSE_DIR / in_path.name
-            if REPATH.exists(out_video_path):
+            if REPATH.exists(out_video_path) and not CONFIG.FORCE_VIDEO_ANNOTATION:
                 LOG.info(f"Video already exists: {out_video_path}")
-                if not CONFIG.FORCE_VIDEO_ANNOTATION:
-                    out_video_path = None
+                out_video_path = None
 
         result = holistic_process(in_path, out_video_path)
         if result is None:
             continue
 
+        if CONFIG.POSE_ANNOTATION_ENABLED:
+            annotation_path = REPATH.DACTYL_POSE_DIR / f'{in_path.stem}.json'
+            if REPATH.exists(annotation_path) and not CONFIG.FORCE_POSE_ANNOTATION:
+                LOG.info(f"Pose annotation already exists: {annotation_path}")
+            else:
+                with open(annotation_path, 'w') as f:
+                    json.dump(serialize_solution_output(result), f, indent='\t')
 
 
 if __name__ == '__main__':

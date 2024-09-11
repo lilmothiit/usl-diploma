@@ -8,7 +8,7 @@ class ProjectConfig:
     LOG_FORMAT = '%(asctime)s | %(levelname)10s | %(filename)30s:%(lineno)4s | %(funcName)30s() | %(message)s'
     LOG_FILE_SIZE = 2*1024*1024
     LOG_FILE_COUNT = 10
-    REQUESTS_PER_SECOND = 3
+    REQUESTS_PER_SECOND = 5
 
     # ================================================ SCRAPING OPTIONS ================================================
     SCRAPING_ENABLED = False                    # whether to perform data scraping
@@ -29,7 +29,7 @@ class ProjectConfig:
     # ================================================ POSE  ESTIMATION ================================================
     POSE_ESTIMATION_ENABLED = True      # whether to perform any pose estimation tasks at all
     POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
-    FORCE_POSE_ANNOTATION = False       # force pose estimation, even if the respective annotation file already exists
+    FORCE_POSE_ANNOTATION = True        # force pose estimation, even if the respective annotation file already exists
     VIDEO_ANNOTATION_ENABLED = True     # whether to save annotated videos
     FORCE_VIDEO_ANNOTATION = False      # force video annotation, even if the respective annotated video already exists
     POSE_ESTIMATION_OPTIONS = {
