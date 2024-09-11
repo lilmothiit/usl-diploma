@@ -29,9 +29,9 @@ class ProjectConfig:
     # ================================================ POSE  ESTIMATION ================================================
     POSE_ESTIMATION_ENABLED = True      # whether to perform any pose estimation tasks at all
     POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
-    FORCE_POSE_ANNOTATION = False       # force pose landmark detection, even if there's a
-    VIDEO_ANNOTATION_ENABLED = True
-    FORCE_VIDEO_ANNOTATION = False
+    FORCE_POSE_ANNOTATION = False       # force pose estimation, even if the respective annotation file already exists
+    VIDEO_ANNOTATION_ENABLED = True     # whether to save annotated videos
+    FORCE_VIDEO_ANNOTATION = False      # force video annotation, even if the respective annotated video already exists
 
 
 CONFIG = ProjectConfig()
