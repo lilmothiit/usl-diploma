@@ -2,7 +2,7 @@ import logging
 
 
 class ProjectConfig:
-    # ======================================== APP  OPTIONS ========================================
+    # ================================================== APP  OPTIONS ==================================================
     LOG_LEVEL = logging.INFO
     LOG_ALL_EXCEPTIONS = True
     LOG_FORMAT = '%(asctime)s | %(levelname)10s | %(filename)30s:%(lineno)4s | %(funcName)30s() | %(message)s'
@@ -10,7 +10,7 @@ class ProjectConfig:
     LOG_FILE_COUNT = 10
     REQUESTS_PER_SECOND = 3
 
-    # ====================================== SCRAPING OPTIONS ======================================
+    # ================================================ SCRAPING OPTIONS ================================================
     SCRAPING_ENABLED = False
     SITE_NAME = 'https://spreadthesign.com'     # don't change
     LANG_ALIAS = 'uk.ua'                        # change according to site aliases
@@ -23,8 +23,15 @@ class ProjectConfig:
     RESUME_FROM_CATEGORY = None
     RESUME_FROM_CATEGORY_PAGE = None
 
-    # ===================================== ANNOTATION CLEANUP =====================================
-    ANNOTATION_CLEANUP_ENABLED = True
+    # =============================================== ANNOTATION CLEANUP ===============================================
+    ANNOTATION_CLEANUP_ENABLED = False
+
+    # ================================================ POSE  ESTIMATION ================================================
+    POSE_ESTIMATION_ENABLED = True      # whether to perform any pose estimation tasks at all
+    POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
+    FORCE_POSE_ANNOTATION = False       # force pose landmark detection, even if there's a
+    VIDEO_ANNOTATION_ENABLED = True
+    FORCE_VIDEO_ANNOTATION = False
 
 
 CONFIG = ProjectConfig()
