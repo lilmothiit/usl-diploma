@@ -22,7 +22,7 @@ logging.basicConfig(
 
 GLOBAL_LOGGER = logging.getLogger('ProjectLogger')
 
-if CONFIG.LOG_ALL_EXCEPTIONS:
+if CONFIG.LOG_EXCEPTIONS_FROM_ALL:
     def log_all_exceptions(exctype, value, tb):
         GLOBAL_LOGGER.error(f"Uncaught exception: {exctype.__name__}({value})", exc_info=(exctype, value, tb))
 
