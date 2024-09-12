@@ -38,9 +38,25 @@ class ProjectConfig:
         'smooth_landmarks'          : True,     # whether to reduce jitter
         'enable_segmentation'       : False,    # whether to find ROI of the detected person
         'smooth_segmentation'       : True,     # whether to reduce jitter of the ROI
-        'refine_face_landmarks'     : False,    # whether to perform additional refinement of face landmarks
+        'refine_face_landmarks'     : True,     # whether to refine landmarks and detect irises (+10 landmarks)
         'min_detection_confidence'  : 0.9,      # [0.0, 1.0] minimum confidence value of the person-detection model
         'min_tracking_confidence'   : 0.9       # [0.0, 1.0] minimum confidence value of the pose-detection models
+    }
+
+    REDUCE_POSE_PRECISION = False       # False to avoid rounding or ndigit value for the round() function
+    REDUCE_FACE_MESH = True             # If true, out of all data (468-478 landmarks), save only selected
+    SELECT_FACE_PARTS = {
+        'face_outline',
+        'lips_inside',
+        'lips_outside',
+        'nose_tip',
+        # 'nose_tip_extended',  # selects both the tip and 4 cardinally connected vertices
+        'left_eye',
+        'right_eye',
+        'left_iris',            # refine_face_landmarks needs to be True
+        'right_iris',           # refine_face_landmarks needs to be True
+        'left_eyebrow',
+        'right_eyebrow',
     }
 
 
