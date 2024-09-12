@@ -1,7 +1,6 @@
 import os
 import cv2
 
-
 import pandas as pd
 import mediapipe.python.solutions.drawing_utils as mp_drawing
 import mediapipe.python.solutions.drawing_styles as mp_drawing_styles
@@ -17,6 +16,7 @@ else:
     from pose_estimation.pose_scribe import pose_scribe
 
 import warnings
+warnings.filterwarnings("ignore", message="Feedback manager requires a model with a single signature inference.")
 warnings.filterwarnings("ignore", module='mediapipe')
 warnings.filterwarnings("ignore", module='tensorflow')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -24,7 +24,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 _HOLISTIC_ARGS = CONFIG.POSE_ESTIMATION_OPTIONS
 _ANNOTATION_STYLES = {
     'pose_landmarks': (mp_holistic.POSE_CONNECTIONS, mp_drawing_styles.get_default_pose_landmarks_style()),
-    'face_landmarks': (mp_holistic.FACEMESH_CONTOURS, mp_drawing_styles.get_default_face_mesh_contours_style()),
+    'face_landmarks': (mp_holistic.FACEMESH_CONTOURS, None, mp_drawing_styles.get_default_face_mesh_contours_style()),
     'left_hand_landmarks': (mp_holistic.HAND_CONNECTIONS, mp_drawing_styles.get_default_hand_landmarks_style()),
     'right_hand_landmarks': (mp_holistic.HAND_CONNECTIONS, mp_drawing_styles.get_default_hand_landmarks_style())
 }
@@ -55,7 +55,7 @@ def draw_annotation(image, annotation):
         annot = getattr(annotation, annot_type)
         if not annot:
             continue
-        mp_drawing.draw_landmarks(image, annot)
+        mp_drawing.draw_landmarks(image, annot, *style)
 
     return image
 
