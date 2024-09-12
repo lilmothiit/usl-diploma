@@ -31,7 +31,7 @@ class ProjectConfig:
     POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
     FORCE_POSE_ANNOTATION = True        # force pose estimation, even if the respective annotation file already exists
     VIDEO_ANNOTATION_ENABLED = True     # whether to save annotated videos
-    FORCE_VIDEO_ANNOTATION = False      # force video annotation, even if the respective annotated video already exists
+    FORCE_VIDEO_ANNOTATION = True      # force video annotation, even if the respective annotated video already exists
     POSE_ESTIMATION_OPTIONS = {
         'static_image_mode'         : False,    # whether input is treated as static images or stream
         'model_complexity'          : 2,        # one of [0, 1, 2] with higher value giving better results
@@ -39,12 +39,13 @@ class ProjectConfig:
         'enable_segmentation'       : False,    # whether to find ROI of the detected person
         'smooth_segmentation'       : True,     # whether to reduce jitter of the ROI
         'refine_face_landmarks'     : True,     # whether to refine landmarks and detect irises (+10 landmarks)
+                                                # NOTE that refinement can fail, and iris landmarks will not exist
         'min_detection_confidence'  : 0.9,      # [0.0, 1.0] minimum confidence value of the person-detection model
         'min_tracking_confidence'   : 0.9       # [0.0, 1.0] minimum confidence value of the pose-detection models
     }
 
     REDUCE_POSE_PRECISION = False       # False to avoid rounding or ndigit value for the round() function
-    REDUCE_FACE_MESH = True             # If true, out of all data (468-478 landmarks), save only selected
+    REDUCE_FACE_MESH = True             # If true, out of all 468-478 landmarks, only selected categories are saved
     SELECT_FACE_PARTS = {
         'face_outline',
         'lips_inside',
@@ -57,6 +58,10 @@ class ProjectConfig:
         'right_iris',           # refine_face_landmarks needs to be True
         'left_eyebrow',
         'right_eyebrow',
+    }
+    POSE_ANNOTATION_TYPES = {   # annotations are written to each selected file type
+        '.json': False,
+        '.msgpack.gz': True
     }
 
 
