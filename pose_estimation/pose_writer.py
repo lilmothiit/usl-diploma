@@ -15,5 +15,5 @@ class PoseWriter:
             loaded_data = msgpack.unpackb(f.read())
             return loaded_data
 
-POSE_WRITER = PoseWriter()
 
+POSE_WRITER = PoseWriter()
