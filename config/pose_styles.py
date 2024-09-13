@@ -1,4 +1,4 @@
-# The file is mostly a copy of mediapipe.python.solutions.drawing_styles
+# This file is mostly a copy of mediapipe.python.solutions.drawing_styles
 # I created d copy, since editing modules is not demure at all
 
 from typing import Mapping, Tuple
@@ -79,13 +79,13 @@ _HAND_CONNECTION_STYLE = {
 }
 
 _FACEMESH_CONTOURS_CONNECTION_STYLE = {
-    face_mesh_connections.FACEMESH_LIPS: DrawingSpec(color=_BLUE, thickness=_THICKNESS_CONTOURS),
-    face_mesh_connections.FACEMESH_LEFT_EYE: DrawingSpec(color=_CYAN, thickness=_THICKNESS_CONTOURS),
-    face_mesh_connections.FACEMESH_LEFT_EYEBROW: DrawingSpec(color=_GREEN, thickness=_THICKNESS_CONTOURS),
-    face_mesh_connections.FACEMESH_RIGHT_EYE: DrawingSpec(color=_MAGENTA, thickness=_THICKNESS_CONTOURS),
-    face_mesh_connections.FACEMESH_RIGHT_EYEBROW: DrawingSpec(color=_RED, thickness=_THICKNESS_CONTOURS),
-    face_mesh_connections.FACEMESH_FACE_OVAL: DrawingSpec(color=_WHITE, thickness=_THICKNESS_CONTOURS),
-    face_mesh_connections.FACEMESH_NOSE: DrawingSpec(color=_YELLOW, thickness=_THICKNESS_CONTOURS)
+    face_mesh_connections.FACEMESH_LIPS:            DrawingSpec(color=_BLUE, thickness=_THICKNESS_CONTOURS),
+    face_mesh_connections.FACEMESH_LEFT_EYE:        DrawingSpec(color=_CYAN, thickness=_THICKNESS_CONTOURS),
+    face_mesh_connections.FACEMESH_LEFT_EYEBROW:    DrawingSpec(color=_GREEN, thickness=_THICKNESS_CONTOURS),
+    face_mesh_connections.FACEMESH_RIGHT_EYE:       DrawingSpec(color=_MAGENTA, thickness=_THICKNESS_CONTOURS),
+    face_mesh_connections.FACEMESH_RIGHT_EYEBROW:   DrawingSpec(color=_RED, thickness=_THICKNESS_CONTOURS),
+    face_mesh_connections.FACEMESH_FACE_OVAL:       DrawingSpec(color=_WHITE, thickness=_THICKNESS_CONTOURS),
+    face_mesh_connections.FACEMESH_NOSE:            DrawingSpec(color=_YELLOW, thickness=_THICKNESS_CONTOURS)
 }
 
 
