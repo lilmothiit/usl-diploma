@@ -1,5 +1,5 @@
 # This file is mostly a copy of mediapipe.python.solutions.drawing_styles
-# I created d copy, since editing modules is not demure at all
+# I created a copy, since editing modules is not demure at all
 
 from typing import Mapping, Tuple
 
@@ -24,7 +24,7 @@ _CYAN = (192, 255, 48)
 _MAGENTA = (192, 48, 255)
 
 # Hands options
-_THICKNESS_WRIST_MCP = 2
+_THICKNESS_WRIST_MCP = 1
 _THICKNESS_FINGER = 1
 _THICKNESS_DOT = -1
 _RADIUS_DOT = 3
@@ -34,7 +34,7 @@ _THICKNESS_TESSELATION = 1
 _THICKNESS_CONTOURS = 1
 
 # Pose options
-_THICKNESS_POSE_LANDMARKS = 2
+_THICKNESS_POSE_LANDMARKS = 1
 
 
 # ========================================== LANDMARK AND CONNECTIONS OPTIONS ==========================================
@@ -47,17 +47,16 @@ _RING_FINGER_LANDMARKS = (Hand.RING_FINGER_PIP, Hand.RING_FINGER_DIP, Hand.RING_
 _PINKY_FINGER_LANDMARKS = (Hand.PINKY_PIP, Hand.PINKY_DIP, Hand.PINKY_TIP)
 
 _POSE_LANDMARKS_LEFT = frozenset([
-    # Pose.LEFT_EYE_INNER, Pose.LEFT_EYE, Pose.LEFT_EYE_OUTER, Pose.LEFT_EAR, Pose.MOUTH_LEFT,
-    Pose.LEFT_SHOULDER, Pose.LEFT_ELBOW, Pose.LEFT_WRIST,  # Pose.LEFT_PINKY, Pose.LEFT_INDEX, Pose.LEFT_THUMB,
+    Pose.LEFT_EYE_INNER, Pose.LEFT_EYE, Pose.LEFT_EYE_OUTER, Pose.LEFT_EAR, Pose.MOUTH_LEFT,
+    Pose.LEFT_SHOULDER, Pose.LEFT_ELBOW, Pose.LEFT_WRIST, Pose.LEFT_PINKY, Pose.LEFT_INDEX, Pose.LEFT_THUMB,
     Pose.LEFT_HIP, Pose.LEFT_KNEE, Pose.LEFT_ANKLE, Pose.LEFT_HEEL, Pose.LEFT_FOOT_INDEX
 ])
 
 _POSE_LANDMARKS_RIGHT = frozenset([
-    # Pose.RIGHT_EYE_INNER, Pose.RIGHT_EYE, Pose.RIGHT_EYE_OUTER, Pose.RIGHT_EAR, Pose.MOUTH_RIGHT,
-    Pose.RIGHT_SHOULDER, Pose.RIGHT_ELBOW, Pose.RIGHT_WRIST,  # Pose.RIGHT_PINKY, Pose.RIGHT_INDEX, Pose.RIGHT_THUMB,
+    Pose.RIGHT_EYE_INNER, Pose.RIGHT_EYE, Pose.RIGHT_EYE_OUTER, Pose.RIGHT_EAR, Pose.MOUTH_RIGHT,
+    Pose.RIGHT_SHOULDER, Pose.RIGHT_ELBOW, Pose.RIGHT_WRIST, Pose.RIGHT_PINKY, Pose.RIGHT_INDEX, Pose.RIGHT_THUMB,
     Pose.RIGHT_HIP, Pose.RIGHT_KNEE, Pose.RIGHT_ANKLE, Pose.RIGHT_HEEL, Pose.RIGHT_FOOT_INDEX
 ])
-
 
 # ======================================= LANDMARK AND CONNECTIONS COLOR OPTIONS =======================================
 _HAND_LANDMARK_STYLE = {

@@ -17,12 +17,7 @@ else:
 
 
 _HOLISTIC_ARGS = CONFIG.POSE_ESTIMATION_OPTIONS
-_ANNOTATION_STYLES = (
-    ('pose_landmarks', mp_holistic.POSE_CONNECTIONS, POSE_STYLES.get_pose_landmarks_style()),
-    ('face_landmarks', mp_holistic.FACEMESH_CONTOURS, None, POSE_STYLES.get_face_mesh_contours_style()),
-    ('left_hand_landmarks', mp_holistic.HAND_CONNECTIONS, POSE_STYLES.get_hand_landmarks_style()),
-    ('right_hand_landmarks', mp_holistic.HAND_CONNECTIONS, POSE_STYLES.get_hand_landmarks_style())
-)
+_ANNOTATION_STYLES = CONFIG.VIDEO_ANNOTATION_STYLES
 
 _SELECTED_FACE_VERTICES = {
     'face_outline':         [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 378, 400, 377,
@@ -48,6 +43,7 @@ def draw_annotation(image, annotation):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
     for annot_type, *style in _ANNOTATION_STYLES:
+        LOG.debug(f'Drawing annotation {annot_type}')
         annot = getattr(annotation, annot_type)
         if not annot:
             continue
@@ -105,13 +101,13 @@ def serialize_solution_output(frames):
         if landmarks is None:
             return None
         return [
-            {
+            {i: {
                 "x": reduce(landmark.x),
                 "y": reduce(landmark.y),
                 "z": reduce(getattr(landmark, 'z', None)),
                 "v": reduce(getattr(landmark, 'visibility', None))
-            }
-            for landmark in landmarks.landmark
+            }}
+            for i, landmark in enumerate(landmarks.landmark)
         ]
 
     def select_face_sections(face_data):
@@ -129,6 +125,7 @@ def serialize_solution_output(frames):
                 if key == 'right_iris' and 473 > len(face_data):
                     #LOG.warning('Right iris was not found in face data')
                     continue
+
             new_data[key] = [face_data[i] for i in index if i < len(face_data)]
         return new_data
 
@@ -145,25 +142,39 @@ def serialize_solution_output(frames):
 
 
 def estimate_poses():
-    dactyl = pd.read_csv(REPATH.ANNOTATION_DIR / 'dactyl.csv', delimiter=';')
+    if not (CONFIG.POSE_ESTIMATION_SOURCE['dactyl'] or CONFIG.POSE_ESTIMATION_SOURCE['words']):
+        LOG.error("No pose estimation sources were selected")
+        return
+
+    dactyl = pd.read_csv(REPATH.ANNOTATION_DIR / 'dactyl.csv', delimiter=';') \
+        if CONFIG.POSE_ESTIMATION_SOURCE['dactyl'] else None
+    words = pd.read_csv(REPATH.ANNOTATION_DIR / 'words_clean.csv', delimiter=';') \
+        if CONFIG.POSE_ESTIMATION_SOURCE['words'] else None
+
+    combined = []
+    if dactyl is not None:
+        combined.append((dactyl, REPATH.DACTYL_POSE_DIR))
+    if words is not None:
+        combined.append((words, REPATH.WORD_POSE_DIR))
 
     out_video_path = None
-    for path in dactyl['local_path']:
-        in_path = REPATH.PROJECT_ROOT / path
+    for df, save_path in combined:
+        for path in df['local_path']:
+            in_path = REPATH.PROJECT_ROOT / path
 
-        if CONFIG.VIDEO_ANNOTATION_ENABLED:
-            out_video_path = REPATH.DACTYL_POSE_DIR / in_path.name
-            if REPATH.exists(out_video_path) and not CONFIG.FORCE_VIDEO_ANNOTATION:
-                LOG.info(f"Video already exists: {out_video_path}")
-                out_video_path = None
+            if CONFIG.VIDEO_ANNOTATION_ENABLED:
+                out_video_path = save_path / in_path.name
+                if REPATH.exists(out_video_path) and not CONFIG.FORCE_VIDEO_ANNOTATION:
+                    LOG.info(f"Video already exists: {out_video_path}")
+                    out_video_path = None
 
-        result = holistic_process(in_path, out_video_path)
-        if result is None:
-            continue
+            result = holistic_process(in_path, out_video_path)
+            if result is None:
+                continue
 
-        if CONFIG.POSE_ANNOTATION_ENABLED:
-            annotation_path = REPATH.DACTYL_POSE_DIR / f'{in_path.stem}'
-            pose_scribe.write(serialize_solution_output(result), annotation_path)
+            if CONFIG.POSE_ANNOTATION_ENABLED:
+                annotation_path = save_path / f'{in_path.stem}'
+                pose_scribe.write(serialize_solution_output(result), annotation_path)
 
 
 if __name__ == '__main__':

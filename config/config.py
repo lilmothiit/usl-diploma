@@ -1,5 +1,7 @@
 import logging
 
+import mediapipe.python.solutions.holistic as mp_holistic
+import config.pose_styles as POSE_STYLES
 
 class ProjectConfig:
     # ================================================== APP  OPTIONS ==================================================
@@ -28,22 +30,33 @@ class ProjectConfig:
 
     # ================================================ POSE  ESTIMATION ================================================
     POSE_ESTIMATION_ENABLED = True      # whether to perform any pose estimation tasks at all
-    POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
-    FORCE_POSE_ANNOTATION = True        # force pose estimation, even if the respective annotation file already exists
-    VIDEO_ANNOTATION_ENABLED = True     # whether to save annotated videos
-    FORCE_VIDEO_ANNOTATION = True       # force video annotation, even if the respective annotated video already exists
     POSE_ESTIMATION_OPTIONS = {
-        'static_image_mode'         : False,    # whether input is treated as static images or stream
-        'model_complexity'          : 2,        # one of [0, 1, 2] with higher value giving better results
-        'smooth_landmarks'          : True,     # whether to reduce jitter
-        'enable_segmentation'       : False,    # whether to find ROI of the detected person
-        'smooth_segmentation'       : True,     # whether to reduce jitter of the ROI
-        'refine_face_landmarks'     : True,     # whether to refine landmarks and detect irises (+10 landmarks)
-                                                # NOTE that refinement can fail, and iris landmarks will not exist
-        'min_detection_confidence'  : 0.9,      # [0.0, 1.0] minimum confidence value of the person-detection model
-        'min_tracking_confidence'   : 0.9       # [0.0, 1.0] minimum confidence value of the pose-detection models
+        'static_image_mode': False,         # whether input is treated as static images or stream
+        'model_complexity': 2,              # one of [0, 1, 2] with higher value giving better results
+        'smooth_landmarks': True,           # whether to reduce jitter
+        'enable_segmentation': False,       # whether to find ROI of the detected person
+        'smooth_segmentation': True,        # whether to reduce jitter of the ROI
+        'refine_face_landmarks': True,      # whether to refine landmarks and detect irises (+10 landmarks)
+                                            # NOTE that refinement can fail, and iris landmarks will not exist
+        'min_detection_confidence': 0.9,    # [0.0, 1.0] minimum confidence value of the person-detection model
+        'min_tracking_confidence': 0.9      # [0.0, 1.0] minimum confidence value of the pose-detection models
+    }
+    POSE_ESTIMATION_SOURCE = {
+        'dactyl': True,
+        'words': False
     }
 
+    VIDEO_ANNOTATION_ENABLED = False  # whether to save annotated videos
+    FORCE_VIDEO_ANNOTATION = True  # force video annotation, even if the respective annotated video already exists
+    VIDEO_ANNOTATION_STYLES = (
+        ('pose_landmarks', mp_holistic.POSE_CONNECTIONS, POSE_STYLES.get_pose_landmarks_style()),
+        ('face_landmarks', mp_holistic.FACEMESH_CONTOURS, None, POSE_STYLES.get_face_mesh_contours_style()),
+        ('left_hand_landmarks', mp_holistic.HAND_CONNECTIONS, None, POSE_STYLES.get_hand_connections_style()),
+        ('right_hand_landmarks', mp_holistic.HAND_CONNECTIONS, None, POSE_STYLES.get_hand_connections_style())
+    )
+
+    POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
+    FORCE_POSE_ANNOTATION = True        # force pose estimation, even if the respective annotation file already exists
     REDUCE_POSE_PRECISION = False       # False to avoid rounding or ndigit value for the round() function
     REDUCE_FACE_MESH = True             # If true, out of all 468-478 landmarks, only selected categories are saved
     SELECT_FACE_PARTS = {
