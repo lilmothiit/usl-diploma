@@ -3,31 +3,26 @@ import cv2
 
 import pandas as pd
 import mediapipe.python.solutions.drawing_utils as mp_drawing
-import mediapipe.python.solutions.drawing_styles as mp_drawing_styles
 import mediapipe.python.solutions.holistic as mp_holistic
 
 from config.config import CONFIG
 from util.global_logger import GLOBAL_LOGGER as LOG
 from util.path_resolver import PATH_RESOLVER as REPATH
+import config.pose_styles as POSE_STYLES
 
 if __name__ == '__main__':
     from pose_scribe import pose_scribe
 else:
     from pose_estimation.pose_scribe import pose_scribe
 
-import warnings
-warnings.filterwarnings("ignore", message="Feedback manager requires a model with a single signature inference.")
-warnings.filterwarnings("ignore", module='mediapipe')
-warnings.filterwarnings("ignore", module='tensorflow')
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 _HOLISTIC_ARGS = CONFIG.POSE_ESTIMATION_OPTIONS
-_ANNOTATION_STYLES = {
-    'pose_landmarks': (mp_holistic.POSE_CONNECTIONS, mp_drawing_styles.get_default_pose_landmarks_style()),
-    'face_landmarks': (mp_holistic.FACEMESH_CONTOURS, None, mp_drawing_styles.get_default_face_mesh_contours_style()),
-    'left_hand_landmarks': (mp_holistic.HAND_CONNECTIONS, mp_drawing_styles.get_default_hand_landmarks_style()),
-    'right_hand_landmarks': (mp_holistic.HAND_CONNECTIONS, mp_drawing_styles.get_default_hand_landmarks_style())
-}
+_ANNOTATION_STYLES = (
+    ('pose_landmarks', mp_holistic.POSE_CONNECTIONS, POSE_STYLES.get_pose_landmarks_style()),
+    ('face_landmarks', mp_holistic.FACEMESH_CONTOURS, None, POSE_STYLES.get_face_mesh_contours_style()),
+    ('left_hand_landmarks', mp_holistic.HAND_CONNECTIONS, POSE_STYLES.get_hand_landmarks_style()),
+    ('right_hand_landmarks', mp_holistic.HAND_CONNECTIONS, POSE_STYLES.get_hand_landmarks_style())
+)
 
 _SELECTED_FACE_VERTICES = {
     'face_outline':         [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 378, 400, 377,
@@ -43,7 +38,8 @@ _SELECTED_FACE_VERTICES = {
     'left_eyebrow':         [55, 65, 52, 53, 46, 107, 66, 105, 63, 70],
     'right_eyebrow':        [285, 295, 282, 283, 276, 336, 296, 334, 293, 300]
 }
-_FACE_CONFIG_SELECTION = {key: value for key, value in _SELECTED_FACE_VERTICES.items() if key in CONFIG.SELECT_FACE_PARTS}
+_FACE_CONFIG_SELECTION = {key: value for key, value in _SELECTED_FACE_VERTICES.items()
+                          if key in CONFIG.SELECT_FACE_PARTS}
 
 
 def draw_annotation(image, annotation):
@@ -51,7 +47,7 @@ def draw_annotation(image, annotation):
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    for annot_type, style in _ANNOTATION_STYLES.items():
+    for annot_type, *style in _ANNOTATION_STYLES:
         annot = getattr(annotation, annot_type)
         if not annot:
             continue

@@ -31,7 +31,7 @@ class ProjectConfig:
     POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
     FORCE_POSE_ANNOTATION = True        # force pose estimation, even if the respective annotation file already exists
     VIDEO_ANNOTATION_ENABLED = True     # whether to save annotated videos
-    FORCE_VIDEO_ANNOTATION = True      # force video annotation, even if the respective annotated video already exists
+    FORCE_VIDEO_ANNOTATION = True       # force video annotation, even if the respective annotated video already exists
     POSE_ESTIMATION_OPTIONS = {
         'static_image_mode'         : False,    # whether input is treated as static images or stream
         'model_complexity'          : 2,        # one of [0, 1, 2] with higher value giving better results
