@@ -13,7 +13,7 @@ class PoseScribe:
     @staticmethod
     def _json_writer(data, path):
         with open(path, 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent='\t')
 
     @staticmethod
     def _json_reader(path):
@@ -65,6 +65,16 @@ class PoseScribe:
             return
 
         return self.readers[file_type](path)
+
+    @staticmethod
+    def all_selected_exist(untyped_path):
+        type_existance = []
+        for file_type, perform_write in CONFIG.POSE_ANNOTATION_TYPES.items():
+            if not perform_write:
+                continue
+            typed_path = untyped_path.parent / (untyped_path.name + file_type)
+            type_existance.append(REPATH.exists(typed_path))
+        return all(type_existance)
 
 
 pose_scribe = PoseScribe()

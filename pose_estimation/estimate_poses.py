@@ -99,33 +99,25 @@ def serialize_solution_output(frames):
     def serialize_landmarks(landmarks):
         if landmarks is None:
             return None
-        return [
-            {i: {
+        return {
+            i: {
                 "x": reduce(landmark.x),
                 "y": reduce(landmark.y),
                 "z": reduce(getattr(landmark, 'z', None)),
                 "v": reduce(getattr(landmark, 'visibility', None))
-            }}
+            }
             for i, landmark in enumerate(landmarks.landmark)
-        ]
+        }
 
     def select_face_sections(face_data):
+        if face_data is None:
+            return None
         if not CONFIG.REDUCE_FACE_MESH:
             return face_data
 
         new_data = {}
         for key, index in _FACE_CONFIG_SELECTION.items():
-            if key in ['left_iris', 'right_iris']:
-                if not _HOLISTIC_ARGS['refine_face_landmarks']:
-                    continue
-                if key == 'left_iris' and 468 > len(face_data):
-                    #LOG.warning('Left iris was not found in face data')
-                    continue
-                if key == 'right_iris' and 473 > len(face_data):
-                    #LOG.warning('Right iris was not found in face data')
-                    continue
-
-            new_data[key] = [face_data[i] for i in index if i < len(face_data)]
+            new_data[key] = {i: face_data[i] for i in index if i in face_data}
         return new_data
 
     def serialize_frame(frame):
@@ -157,6 +149,7 @@ def estimate_poses():
         combined.append((words, REPATH.WORD_POSE_DIR))
 
     out_video_path = None
+    annotation_path = None
     for df, save_path in combined:
         for path in df['local_path']:
             in_path = REPATH.PROJECT_ROOT / path
@@ -167,12 +160,19 @@ def estimate_poses():
                     LOG.info(f"Video already exists: {out_video_path}")
                     out_video_path = None
 
+            annotation_path = save_path / f'{in_path.stem}'
+            if not CONFIG.FORCE_POSE_ANNOTATION:
+                if pose_scribe.all_selected_exist(annotation_path):
+                    annotation_path = None
+
+            if out_video_path is None and annotation_path is None:
+                continue
+
             result = holistic_process(in_path, out_video_path)
             if result is None:
                 continue
 
             if CONFIG.POSE_ANNOTATION_ENABLED:
-                annotation_path = save_path / f'{in_path.stem}'
                 pose_scribe.write(serialize_solution_output(result), annotation_path)
 
 
