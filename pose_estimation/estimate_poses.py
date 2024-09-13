@@ -8,7 +8,6 @@ import mediapipe.python.solutions.holistic as mp_holistic
 from config.config import CONFIG
 from util.global_logger import GLOBAL_LOGGER as LOG
 from util.path_resolver import PATH_RESOLVER as REPATH
-import config.pose_styles as POSE_STYLES
 
 if __name__ == '__main__':
     from pose_scribe import pose_scribe

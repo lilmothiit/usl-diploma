@@ -46,8 +46,8 @@ class ProjectConfig:
         'words': False
     }
 
-    VIDEO_ANNOTATION_ENABLED = False  # whether to save annotated videos
-    FORCE_VIDEO_ANNOTATION = True  # force video annotation, even if the respective annotated video already exists
+    VIDEO_ANNOTATION_ENABLED = False    # whether to save annotated videos
+    FORCE_VIDEO_ANNOTATION = True       # force video annotation, even if the respective annotated video already exists
     VIDEO_ANNOTATION_STYLES = (
         ('pose_landmarks', mp_holistic.POSE_CONNECTIONS, POSE_STYLES.get_pose_landmarks_style()),
         ('face_landmarks', mp_holistic.FACEMESH_CONTOURS, None, POSE_STYLES.get_face_mesh_contours_style()),
