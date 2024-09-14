@@ -16,6 +16,7 @@ else:
 
 
 _HOLISTIC_ARGS = CONFIG.POSE_ESTIMATION_OPTIONS
+_HOLISTIC = mp_holistic.Holistic(_HOLISTIC_ARGS)
 _ANNOTATION_STYLES = CONFIG.VIDEO_ANNOTATION_STYLES
 
 _SELECTED_FACE_VERTICES = {
@@ -68,21 +69,20 @@ def holistic_process(input_, output):
         return
 
     results = []
-    with mp_holistic.Holistic(_HOLISTIC_ARGS) as holistic:
-        while in_vid.isOpened():
-            success, image = in_vid.read()
-            if not success:
-                LOG.info("Reached end of video")
-                break
+    while in_vid.isOpened():
+        success, image = in_vid.read()
+        if not success:
+            LOG.info("Reached end of video")
+            break
 
-            # To improve performance, optionally mark the image as not writeable to pass by reference.
-            image.flags.writeable = False
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            results.append(holistic.process(image))
+        # To improve performance, optionally mark the image as not writeable to pass by reference.
+        image.flags.writeable = False
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        results.append(_HOLISTIC.process(image))
 
-            if out_vid is not None:
-                image = draw_annotation(image, results[-1])
-                out_vid.write(image)
+        if out_vid is not None:
+            image = draw_annotation(image, results[-1])
+            out_vid.write(image)
 
     in_vid.release()
     if out_vid is not None:
