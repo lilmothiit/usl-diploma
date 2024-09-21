@@ -4,3 +4,4 @@ pymediainfo~=6.1.0
 mediapipe~=0.10.14
 opencv-python~=4.10.0
 msgpack~=1.1.0
+torch~=2.3.0+cu121
