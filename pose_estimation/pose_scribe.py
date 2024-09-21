@@ -28,8 +28,8 @@ class PoseScribe:
 
     @staticmethod
     def _msgpack_gzip_reader(path):
-        with gzip.open(path, 'wb') as f:
-            return msgpack.unpackb(f.read())
+        with gzip.open(path, 'rb') as f:
+            return msgpack.unpackb(f.read(), use_list=False, strict_map_key=False)
 
     writers = {
         '.json': _json_writer,
