@@ -48,7 +48,7 @@ def train_model(net, data_loader, optimizer, criterion, num_epochs):
         print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {running_loss}")
 
 
-if __name__ == "__main__":
+def train_interpreter():
     vocab_size = len(data['word'])
     embedding_dim = 256
     hidden_dim = 128
@@ -62,3 +62,6 @@ if __name__ == "__main__":
 
     train_model(model, dataloader, optimizer, criterion, num_epochs)
 
+
+if __name__ == "__main__":
+    train_interpreter()
