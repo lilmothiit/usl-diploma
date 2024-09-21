@@ -6,6 +6,8 @@ from dataloader import dataloader, data
 from model import PoseModel
 from loss import PoseLoss
 
+from util.path_resolver import PATH_RESOLVER as REPATH
+
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
@@ -40,7 +42,7 @@ def train_model(net, data_loader, optimizer, criterion, num_epochs):
                 'model_state_dict': net.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': running_loss,
-            }, f'checkpoint.pth')
+            }, REPATH.INTERPRETER_DIR / 'checkpoint.pth')
         losses.append(running_loss)
 
         print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {running_loss}")

@@ -18,6 +18,10 @@ class PathResolver:
     WORD_RAW_DIR = DATA_DIR / 'raw' / 'words'
     WORD_POSE_DIR = DATA_DIR / 'pose' / 'words'
 
+    MODEL_DIR = PROJECT_ROOT / 'models'
+    INTERPRETER_DIR = MODEL_DIR / 'interpreter'
+    TRANSLATOR_DIR = MODEL_DIR / 'translator'
+
     def __init__(self):
         self.LOG_DIR.mkdir(parents=True, exist_ok=True)
         self.DATA_DIR.mkdir(parents=True, exist_ok=True)
