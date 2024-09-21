@@ -1,7 +1,7 @@
 import logging
-
 import mediapipe.python.solutions.holistic as mp_holistic
 import config.pose_styles as POSE_STYLES
+
 
 class ProjectConfig:
     # ================================================== APP  OPTIONS ==================================================
@@ -36,20 +36,20 @@ class ProjectConfig:
         'smooth_landmarks': True,           # whether to reduce jitter
         'enable_segmentation': False,       # whether to find ROI of the detected person
         'smooth_segmentation': True,        # whether to reduce jitter of the ROI
-        'refine_face_landmarks': True,      # whether to refine landmarks and detect irises (+10 landmarks)
+        'refine_face_landmarks': False,     # whether to refine landmarks and detect irises (+10 landmarks)
                                             # NOTE that refinement can fail, and iris landmarks will not exist
         'min_detection_confidence': 0.9,    # [0.0, 1.0] minimum confidence value of the person-detection model
         'min_tracking_confidence': 0.9      # [0.0, 1.0] minimum confidence value of the pose-detection models
     }
     POSE_ESTIMATION_SOURCE = {
         'dactyl': True,
-        'words': False
+        'words': True
     }
 
     VIDEO_ANNOTATION_ENABLED = False    # whether to save annotated videos
     FORCE_VIDEO_ANNOTATION = True       # force video annotation, even if the respective annotated video already exists
     VIDEO_ANNOTATION_STYLES = (
-        ('pose_landmarks', mp_holistic.POSE_CONNECTIONS, POSE_STYLES.get_pose_landmarks_style()),
+        # ('pose_landmarks', mp_holistic.POSE_CONNECTIONS, POSE_STYLES.get_pose_landmarks_style()),
         ('face_landmarks', mp_holistic.FACEMESH_CONTOURS, None, POSE_STYLES.get_face_mesh_contours_style()),
         ('left_hand_landmarks', mp_holistic.HAND_CONNECTIONS, None, POSE_STYLES.get_hand_connections_style()),
         ('right_hand_landmarks', mp_holistic.HAND_CONNECTIONS, None, POSE_STYLES.get_hand_connections_style())

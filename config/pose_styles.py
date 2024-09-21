@@ -58,6 +58,7 @@ _POSE_LANDMARKS_RIGHT = frozenset([
     Pose.RIGHT_HIP, Pose.RIGHT_KNEE, Pose.RIGHT_ANKLE, Pose.RIGHT_HEEL, Pose.RIGHT_FOOT_INDEX
 ])
 
+
 # ======================================= LANDMARK AND CONNECTIONS COLOR OPTIONS =======================================
 _HAND_LANDMARK_STYLE = {
     _PALM_LANDMARKS:            DrawingSpec(color=_RED, thickness=_THICKNESS_DOT, circle_radius=_RADIUS_DOT),
