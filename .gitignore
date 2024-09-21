@@ -7,3 +7,6 @@ gen
 # Project files
 data/
 logs/
+
+# Model checkpoints
+**/checkpoint*
