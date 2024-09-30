@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 class PoseModel(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_layers, output_dim):
+    def __init__(self, vocab_size, embedding_dim, hidden_dim, output_dim):
         super(PoseModel, self).__init__()
 
         self.hidden_dim = hidden_dim
@@ -11,7 +11,7 @@ class PoseModel(nn.Module):
         # Word embedding layer
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
         # RNN to generate sequence of poses
-        self.rnn = nn.LSTM(embedding_dim, hidden_dim, num_layers, batch_first=True)
+        self.rnn = nn.LSTM(embedding_dim, hidden_dim, batch_first=True)
         # FC layer to map hidden states to coordinates
         self.fc = nn.Linear(hidden_dim, output_dim)
         # FC layer to predict end-of-sequence

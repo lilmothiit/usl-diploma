@@ -6,6 +6,7 @@ from data_scraping.collect_categories import collect_categories
 from data_scraping.annotation_cleanup import clean_annotations
 from pose_estimation.estimate_poses import estimate_poses
 from pose_estimation.fast_pose_annotation import fast_annotate
+from pose_estimation.pose_postprocessing import pose_postprocessing
 
 
 def main():
@@ -18,6 +19,8 @@ def main():
     if CONFIG.POSE_ESTIMATION_ENABLED:
         estimate_poses()
         fast_annotate()
+        if CONFIG.COMPRESS_TO_ONE_ARCHIVE:
+            pose_postprocessing()
 
     log.info('='*51 + 'APP END' + '='*51 + '\n')
 

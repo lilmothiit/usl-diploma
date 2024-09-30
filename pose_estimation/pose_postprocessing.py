@@ -60,7 +60,7 @@ def pose_postprocessing():
     poses = []
     lengths = []
     for word, path in zip(annotation['word'], annotation['annotation_path']):
-        LOG.info(f'Processing {path}')
+        LOG.info(f'Post-processing {path}')
         parsed = pose_parser(REPATH.PROJECT_ROOT / path)
         if len(parsed) > 0:
             words.append(word)
@@ -76,6 +76,7 @@ def pose_postprocessing():
     }
 
     output_file = REPATH.WORD_POSE_DIR / '000000_full.msgpack.gz'
+    LOG.info(f'Saving poses to {output_file}')
     with gzip.open(output_file, 'wb') as f:
         packed_data = msgpack.packb(full_data)
         f.write(packed_data)

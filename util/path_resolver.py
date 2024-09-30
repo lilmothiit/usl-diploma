@@ -18,7 +18,7 @@ class PathResolver:
     WORD_RAW_DIR = DATA_DIR / 'raw' / 'words'
     WORD_POSE_DIR = DATA_DIR / 'pose' / 'words'
 
-    MODEL_DIR = PROJECT_ROOT / 'models'
+    MODEL_DIR = PROJECT_ROOT / 'models' / CONFIG.LANG_ALIAS
     INTERPRETER_DIR = MODEL_DIR / 'interpreter'
     TRANSLATOR_DIR = MODEL_DIR / 'translator'
 
@@ -30,6 +30,9 @@ class PathResolver:
         self.DACTYL_POSE_DIR.mkdir(parents=True, exist_ok=True)
         self.WORD_RAW_DIR.mkdir(parents=True, exist_ok=True)
         self.WORD_POSE_DIR.mkdir(parents=True, exist_ok=True)
+        self.MODEL_DIR.mkdir(parents=True, exist_ok=True)
+        self.INTERPRETER_DIR.mkdir(parents=True, exist_ok=True)
+        self.TRANSLATOR_DIR.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def resolve_relative_url(relative_url):
