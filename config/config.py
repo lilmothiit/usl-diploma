@@ -46,11 +46,11 @@ class ProjectConfig:
         'output_face_blendshapes'       : True,
     }
     POSE_ESTIMATION_SOURCE = {
-        'dactyl': True,
-        'words': False
+        'dactyl': False,
+        'words': True
     }
 
-    VIDEO_ANNOTATION_ENABLED = True    # whether to save annotated videos
+    VIDEO_ANNOTATION_ENABLED = False    # whether to save annotated videos
     FORCE_VIDEO_ANNOTATION = True       # force video annotation, even if the respective annotated video already exists
     VIDEO_ANNOTATION_STYLES = (
         ('pose_landmarks', solutions.pose.POSE_CONNECTIONS, pose_styles.get_pose_landmarks_style()),
@@ -74,9 +74,10 @@ class ProjectConfig:
     }
 
     POSE_ANNOTATION_TYPES = {   # annotations are written to each selected file type
-        '.csv': True,
-        '.json': True,
-        '.msgpack.gz': False
+        '.json': False,
+        '.json.pkl': False,
+        '.csv': False,
+        '.csv.pkl': True
     }
 
     COMPRESS_TO_ONE_ARCHIVE = True      # compress all pose annotations to one list of pose annotation lists
