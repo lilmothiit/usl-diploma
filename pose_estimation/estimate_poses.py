@@ -1,9 +1,12 @@
 import os
 import cv2
-
 import pandas as pd
+
+import mediapipe as mp
+from mediapipe import solutions
+from mediapipe.framework.formats import landmark_pb2
+from mediapipe.tasks.python.vision import HolisticLandmarkerOptions, HolisticLandmarker
 import mediapipe.python.solutions.drawing_utils as mp_drawing
-import mediapipe.python.solutions.holistic as mp_holistic
 
 from config.config import CONFIG
 from util.global_logger import GLOBAL_LOGGER as LOG
@@ -14,32 +17,12 @@ if __name__ == '__main__':
 else:
     from pose_estimation.pose_scribe import pose_scribe
 
-
-_HOLISTIC_ARGS = CONFIG.POSE_ESTIMATION_OPTIONS
-_HOLISTIC = mp_holistic.Holistic(_HOLISTIC_ARGS)
+_HOLISTIC_OPTIONS = HolisticLandmarkerOptions(**CONFIG.POSE_ESTIMATION_OPTIONS)
+_HOLISTIC = HolisticLandmarker.create_from_options(_HOLISTIC_OPTIONS)
 _ANNOTATION_STYLES = CONFIG.VIDEO_ANNOTATION_STYLES
-
-_SELECTED_FACE_VERTICES = {
-    'face_outline':         [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 378, 400, 377,
-                             152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109],
-    'lips_inside':          [13, 312, 311, 310, 415, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95, 78, 191, 80, 81, 82],
-    'lips_outside':         [0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146, 61, 185, 40, 39, 37],
-    'nose_tip':             [4],
-    'nose_tip_extended':    [1, 4, 5, 45, 275],
-    'left_eye':             [133, 155, 154, 153, 145, 144, 163, 7, 33, 246, 161, 160, 159, 158, 157, 173],
-    'right_eye':            [362, 398, 384, 385, 386, 387, 388, 466, 263, 249, 390, 373, 374, 380, 381, 382],
-    'left_iris':            [468, 469, 470, 471, 472],
-    'right_iris':           [473, 474, 475, 476, 477],
-    'left_eyebrow':         [55, 65, 52, 53, 46, 107, 66, 105, 63, 70],
-    'right_eyebrow':        [285, 295, 282, 283, 276, 336, 296, 334, 293, 300]
-}
-_FACE_CONFIG_SELECTION = {key: value for key, value in _SELECTED_FACE_VERTICES.items()
-                          if key in CONFIG.SELECT_FACE_PARTS}
 
 
 def draw_annotation(image, annotation):
-    # Draw landmark annotation on the image.
-    image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
     for annot_type, *style in _ANNOTATION_STYLES:
@@ -75,10 +58,10 @@ def holistic_process(input_, output):
             LOG.info("Reached end of video")
             break
 
-        # To improve performance, optionally mark the image as not writeable to pass by reference.
-        image.flags.writeable = False
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results.append(_HOLISTIC.process(image))
+        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image)
+        holistic_result = _HOLISTIC.detect_for_video(mp_image, int(in_vid.get(cv2.CAP_PROP_POS_MSEC)))
+        results.append(holistic_result)
 
         if out_vid is not None:
             image = draw_annotation(image, results[-1])
@@ -90,44 +73,40 @@ def holistic_process(input_, output):
     return results
 
 
-def serialize_solution_output(frames):
+def serialize_holistic_result_list(frames):
     def reduce(value):
         if value is None or not CONFIG.REDUCE_POSE_PRECISION:
             return value
         return round(value, CONFIG.REDUCE_POSE_PRECISION)
 
-    def serialize_landmarks(landmarks):
-        if landmarks is None:
+    def serialize_data(data):
+        if data is None or data == []:
             return None
+
+        if hasattr(data[0], 'category_name') and hasattr(data[0], 'score'):
+            return {
+                data[i].category_name : data[i].score
+                for i in range(len(data))
+            }
+
         return {
             i: {
                 "x": reduce(landmark.x),
                 "y": reduce(landmark.y),
                 "z": reduce(getattr(landmark, 'z', None)),
-                "v": reduce(getattr(landmark, 'visibility', None))
+                "v": reduce(getattr(landmark, 'visibility', None)),
+                "p": reduce(getattr(landmark, 'presence', None))
             }
-            for i, landmark in enumerate(landmarks.landmark)
+            for i, landmark in enumerate(data.landmark)
         }
-
-    def select_face_sections(face_data):
-        if face_data is None:
-            return None
-        if not CONFIG.REDUCE_FACE_MESH:
-            return face_data
-
-        new_data = {}
-        for key, index in _FACE_CONFIG_SELECTION.items():
-            new_data[key] = {i: face_data[i] for i in index if i in face_data}
-        return new_data
 
     def serialize_frame(frame):
-        return {
-            "face_landmarks": select_face_sections(serialize_landmarks(frame.face_landmarks)),
-            "pose_landmarks": serialize_landmarks(frame.pose_landmarks),
-            "pose_world_landmarks": serialize_landmarks(frame.pose_world_landmarks),
-            "left_hand_landmarks": serialize_landmarks(frame.left_hand_landmarks),
-            "right_hand_landmarks": serialize_landmarks(frame.right_hand_landmarks)
-        }
+        annot_dict = {}
+        for annot_type, save in CONFIG.SELECTED_POSE_ANNOTATIONS.items():
+            if save:
+                annot_dict[annot_type] = serialize_data(getattr(frame, annot_type))
+
+        return annot_dict
 
     return [serialize_frame(frame) for frame in frames]
 
@@ -173,7 +152,7 @@ def estimate_poses():
                 continue
 
             if CONFIG.POSE_ANNOTATION_ENABLED:
-                pose_scribe.write(serialize_solution_output(result), annotation_path)
+                pose_scribe.write(serialize_holistic_result_list(result), annotation_path)
 
 
 if __name__ == '__main__':

@@ -10,3 +10,4 @@ logs/
 
 # Model checkpoints
 **/checkpoint*
+holistic/
