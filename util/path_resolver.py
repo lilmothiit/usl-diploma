@@ -13,26 +13,21 @@ class PathResolver:
     LOG_DIR = PROJECT_ROOT / 'logs'
     DATA_DIR = PROJECT_ROOT / 'data' / CONFIG.LANG_ALIAS
     ANNOTATION_DIR = DATA_DIR / 'annotation'
-    DACTYL_RAW_DIR = DATA_DIR / 'raw' / 'dactyl'
-    DACTYL_POSE_DIR = DATA_DIR / 'pose' / 'dactyl'
-    WORD_RAW_DIR = DATA_DIR / 'raw' / 'words'
-    WORD_POSE_DIR = DATA_DIR / 'pose' / 'words'
+    RAW_DATA_DIR = DATA_DIR / 'raw'
+    POSE_DATA_DIR = DATA_DIR / 'pose'
+    DACTYL_RAW_DIR = RAW_DATA_DIR / 'dactyl'
+    DACTYL_POSE_DIR = POSE_DATA_DIR / 'dactyl'
+    WORD_RAW_DIR = RAW_DATA_DIR / 'words'
+    WORD_POSE_DIR = POSE_DATA_DIR / 'words'
 
     MODEL_DIR = PROJECT_ROOT / 'models' / CONFIG.LANG_ALIAS
     INTERPRETER_DIR = MODEL_DIR / 'interpreter'
     TRANSLATOR_DIR = MODEL_DIR / 'translator'
 
     def __init__(self):
-        self.LOG_DIR.mkdir(parents=True, exist_ok=True)
-        self.DATA_DIR.mkdir(parents=True, exist_ok=True)
-        self.ANNOTATION_DIR.mkdir(parents=True, exist_ok=True)
-        self.DACTYL_RAW_DIR.mkdir(parents=True, exist_ok=True)
-        self.DACTYL_POSE_DIR.mkdir(parents=True, exist_ok=True)
-        self.WORD_RAW_DIR.mkdir(parents=True, exist_ok=True)
-        self.WORD_POSE_DIR.mkdir(parents=True, exist_ok=True)
-        self.MODEL_DIR.mkdir(parents=True, exist_ok=True)
-        self.INTERPRETER_DIR.mkdir(parents=True, exist_ok=True)
-        self.TRANSLATOR_DIR.mkdir(parents=True, exist_ok=True)
+        for attr in dir(self):
+            if attr.endswith('_DIR'):
+                getattr(self, attr).mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def resolve_relative_url(relative_url):
