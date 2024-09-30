@@ -1,6 +1,6 @@
 import json
-import gzip
-import msgpack
+import pickle
+from io import StringIO
 import pandas as pd
 
 from util.path_resolver import PATH_RESOLVER as REPATH
@@ -26,23 +26,22 @@ class PoseScribe:
             return None
 
     @staticmethod
-    def _msgpack_gzip_writer(data, path):
-        with gzip.open(path, 'wb') as f:
-            packed_data = msgpack.packb(data)
-            f.write(packed_data)
+    def _json_pickle_writer(data, path):
+        with open(path, 'wb') as f:
+            pickle.dump(data, f)
 
     @staticmethod
-    def _msgpack_gzip_reader(path):
+    def _json_pickle_reader(path):
         try:
-            with gzip.open(path, 'rb') as f:
-                return msgpack.unpackb(f.read(), use_list=False, strict_map_key=False)
+            with open(path, 'rb') as f:
+                return pickle.load(f)
         except FileNotFoundError as e:
             LOG.error(e)
             return None
 
     @staticmethod
     def _csv_writer(data, path):
-        if isinstance(data[0], dict):
+        if isinstance(data, list) and isinstance(data[0], dict):
             try:
                 data = pd.json_normalize(data)
             except ValueError as e:
@@ -64,16 +63,44 @@ class PoseScribe:
             LOG.error(e)
             return None
 
+    @staticmethod
+    def _csv_pickle_writer(data, path):
+        csv_buffer = StringIO()
+        if isinstance(data, list):
+            if isinstance(data[0], dict):
+                data = pd.json_normalize(data)
+            else:
+                try:
+                    data = pd.DataFrame(data)
+                except ValueError as e:
+                    LOG.error(e)
+                    return None
+
+        data.to_csv(csv_buffer, index=False)
+        with open(path, 'wb') as f:
+            pickle.dump(csv_buffer, f)
+
+    @staticmethod
+    def _csv_pickle_reader(path):
+        try:
+            with open(path, 'rb') as f:
+                return pickle.load(f)
+        except ValueError as e:
+            LOG.error(e)
+            return None
+
     writers = {
-        '.csv': _csv_writer,
         '.json': _json_writer,
-        '.msgpack.gz': _msgpack_gzip_writer
+        '.json.pkl': _json_pickle_writer,
+        '.csv': _csv_writer,
+        '.csv.pkl': _csv_pickle_writer
     }
 
     readers = {
-        '.csv': _csv_reader,
         '.json': _json_reader,
-        '.msgpack.gz': _msgpack_gzip_reader
+        '.json.pkl': _json_pickle_reader,
+        '.csv': _csv_reader,
+        '.csv.pkl': _csv_pickle_reader,
     }
 
     def write(self, data, path: Path):
