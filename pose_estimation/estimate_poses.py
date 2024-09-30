@@ -18,7 +18,6 @@ else:
     from pose_estimation.pose_scribe import pose_scribe
 
 _HOLISTIC_OPTIONS = HolisticLandmarkerOptions(**CONFIG.POSE_ESTIMATION_OPTIONS)
-_HOLISTIC = HolisticLandmarker.create_from_options(_HOLISTIC_OPTIONS)
 _ANNOTATION_STYLES = CONFIG.VIDEO_ANNOTATION_STYLES
 
 
@@ -30,12 +29,18 @@ def draw_annotation(image, annotation):
         annot = getattr(annotation, annot_type)
         if not annot:
             continue
-        mp_drawing.draw_landmarks(image, annot, *style)
+        annot_proto = landmark_pb2.NormalizedLandmarkList()
+        annot_proto.landmark.extend([
+            landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in annot
+        ])
+        mp_drawing.draw_landmarks(image, annot_proto, *style)
 
     return image
 
 
 def holistic_process(input_, output):
+    _HOLISTIC = HolisticLandmarker.create_from_options(_HOLISTIC_OPTIONS)
+
     LOG.info(f'Processing video {input_}')
     in_vid = cv2.VideoCapture(input_)
 
@@ -73,7 +78,7 @@ def holistic_process(input_, output):
     return results
 
 
-def serialize_holistic_result_list(frames):
+def serialize_holistic_results(frames):
     def reduce(value):
         if value is None or not CONFIG.REDUCE_POSE_PRECISION:
             return value
@@ -84,10 +89,7 @@ def serialize_holistic_result_list(frames):
             return None
 
         if hasattr(data[0], 'category_name') and hasattr(data[0], 'score'):
-            return {
-                data[i].category_name : data[i].score
-                for i in range(len(data))
-            }
+            return {datum.category_name : datum.score for datum in data}
 
         return {
             i: {
@@ -97,14 +99,18 @@ def serialize_holistic_result_list(frames):
                 "v": reduce(getattr(landmark, 'visibility', None)),
                 "p": reduce(getattr(landmark, 'presence', None))
             }
-            for i, landmark in enumerate(data.landmark)
+            for i, landmark in enumerate(data)
         }
 
     def serialize_frame(frame):
         annot_dict = {}
         for annot_type, save in CONFIG.SELECTED_POSE_ANNOTATIONS.items():
-            if save:
-                annot_dict[annot_type] = serialize_data(getattr(frame, annot_type))
+            if not save:
+                continue
+
+            serialized_annot = serialize_data(getattr(frame, annot_type))
+            if serialized_annot:
+                annot_dict[annot_type] = serialized_annot
 
         return annot_dict
 
@@ -149,10 +155,11 @@ def estimate_poses():
 
             result = holistic_process(in_path, out_video_path)
             if result is None:
+                LOG.error(f"No valid annotation found for {in_path.name}")
                 continue
 
             if CONFIG.POSE_ANNOTATION_ENABLED:
-                pose_scribe.write(serialize_holistic_result_list(result), annotation_path)
+                pose_scribe.write(serialize_holistic_results(result), annotation_path)
 
 
 if __name__ == '__main__':

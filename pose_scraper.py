@@ -18,9 +18,9 @@ def main():
         clean_annotations()
     if CONFIG.POSE_ESTIMATION_ENABLED:
         estimate_poses()
-        fast_annotate()
-        if CONFIG.COMPRESS_TO_ONE_ARCHIVE:
-            pose_postprocessing()
+        #fast_annotate()
+        #if CONFIG.COMPRESS_TO_ONE_ARCHIVE:
+            #pose_postprocessing()
 
     log.info('='*51 + 'APP END' + '='*51 + '\n')
 

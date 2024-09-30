@@ -35,8 +35,8 @@ class ProjectConfig:
     POSE_ESTIMATION_OPTIONS = {
         'base_options': BaseOptions(
             model_asset_path='D:/Lin KPI/diploma/usl-diploma/models/holistic/holistic_landmarker.task'),
-        'running_mode': VisionTaskRunningMode.VIDEO,
-        'min_face_detection_confidence' : 0.9,
+        'running_mode': VisionTaskRunningMode.VIDEO,    # don't change
+        'min_face_detection_confidence' : 0.5,
         'min_face_suppression_threshold': 0.5,
         'min_face_landmarks_confidence' : 0.9,
         'min_pose_detection_confidence' : 0.9,
@@ -54,15 +54,16 @@ class ProjectConfig:
     FORCE_VIDEO_ANNOTATION = True       # force video annotation, even if the respective annotated video already exists
     VIDEO_ANNOTATION_STYLES = (
         ('pose_landmarks', solutions.pose.POSE_CONNECTIONS, pose_styles.get_pose_landmarks_style()),
-        ('face_landmarks', solutions.face_mesh_connections, None, pose_styles.get_face_mesh_contours_style()),
-        ('left_hand_landmarks', solutions.hands_connections, None, pose_styles.get_hand_connections_style()),
-        ('right_hand_landmarks', solutions.hands_connections, None, pose_styles.get_hand_connections_style())
+        ('face_landmarks', solutions.face_mesh_connections.FACEMESH_CONTOURS, None, pose_styles.get_face_mesh_contours_style()),
+        ('left_hand_landmarks', solutions.hands_connections.HAND_CONNECTIONS, None, pose_styles.get_hand_connections_style()),
+        ('right_hand_landmarks', solutions.hands_connections.HAND_CONNECTIONS, None, pose_styles.get_hand_connections_style())
     )
 
-    POSE_ANNOTATION_ENABLED = False      # whether to save pose landmarks
+    POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
     FORCE_POSE_ANNOTATION = True        # force pose estimation, even if the respective annotation file already exists
+    REDUCE_POSE_PRECISION = None        # None or int to pass to the round function
     SELECTED_POSE_ANNOTATIONS = {       # only selected annotations will be saved
-        'face_blend'                    : True,
+        'face_blendshapes'              : True,
         'face_landmarks'                : False,
         'pose_landmarks'                : False,
         'pose_world_landmarks'          : True,

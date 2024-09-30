@@ -1,6 +1,7 @@
 import json
 import gzip
 import msgpack
+import pandas as pd
 
 from util.path_resolver import PATH_RESOLVER as REPATH
 from util.global_logger import GLOBAL_LOGGER as LOG
@@ -17,8 +18,12 @@ class PoseScribe:
 
     @staticmethod
     def _json_reader(path):
-        with open(path, 'r') as f:
-            return json.load(f)
+        try:
+            with open(path, 'r') as f:
+                return json.load(f)
+        except FileNotFoundError as e:
+            LOG.error(e)
+            return None
 
     @staticmethod
     def _msgpack_gzip_writer(data, path):
@@ -28,15 +33,45 @@ class PoseScribe:
 
     @staticmethod
     def _msgpack_gzip_reader(path):
-        with gzip.open(path, 'rb') as f:
-            return msgpack.unpackb(f.read(), use_list=False, strict_map_key=False)
+        try:
+            with gzip.open(path, 'rb') as f:
+                return msgpack.unpackb(f.read(), use_list=False, strict_map_key=False)
+        except FileNotFoundError as e:
+            LOG.error(e)
+            return None
+
+    @staticmethod
+    def _csv_writer(data, path):
+        if isinstance(data[0], dict):
+            try:
+                data = pd.json_normalize(data)
+            except ValueError as e:
+                LOG.error(e)
+                return
+        else:
+            try:
+                data = pd.DataFrame(data)
+            except ValueError as e:
+                LOG.error(e)
+                return
+        data.to_csv(path, index=False)
+
+    @staticmethod
+    def _csv_reader(path):
+        try:
+            return pd.read_csv(path)
+        except ValueError as e:
+            LOG.error(e)
+            return None
 
     writers = {
+        '.csv': _csv_writer,
         '.json': _json_writer,
         '.msgpack.gz': _msgpack_gzip_writer
     }
 
     readers = {
+        '.csv': _csv_reader,
         '.json': _json_reader,
         '.msgpack.gz': _msgpack_gzip_reader
     }
