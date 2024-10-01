@@ -1,11 +1,12 @@
 import pandas as pd
 from util.path_resolver import PATH_RESOLVER as REPATH
+from config.config import CONFIG
 
 
 def fast_annotate():
-    def annotation_pather(path):
+    def annotation_pather(path, filetype='.txt'):
         path = path.replace('\\raw', '\\pose')
-        path = path.replace('.mp4', '.msgpack.gz')
+        path = path.replace('.mp4', filetype)
         if REPATH.exists(REPATH.PROJECT_ROOT / path):
             return path
         else:
@@ -13,9 +14,15 @@ def fast_annotate():
 
     files = ['dactyl.csv', 'words.csv', 'words_clean.csv']
     for file in files:
-        annot_file = REPATH.ANNOTATION_DIR / 'words.csv'
+        annot_file = REPATH.ANNOTATION_DIR / file
         df = pd.read_csv(annot_file, delimiter=';')
-        df['annotation_path'] = df['local_path'].apply(annotation_pather)
+
+        for file_type, save in CONFIG.POSE_ANNOTATION_FILE_TYPES.items():
+            if not save:
+                continue
+            column_name = f'annotation{file_type.replace(".", "_")}'
+            df[column_name] = df['local_path'].apply(annotation_pather, args=(file_type, ))
+
         df.to_csv(annot_file, index=False, sep=';')
 
 
