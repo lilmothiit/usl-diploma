@@ -3,7 +3,6 @@ import cv2
 import pandas as pd
 
 import mediapipe as mp
-from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 from mediapipe.tasks.python.vision import HolisticLandmarkerOptions, HolisticLandmarker
 import mediapipe.python.solutions.drawing_utils as mp_drawing
@@ -85,7 +84,7 @@ def serialize_holistic_results(frames):
         return round(value, CONFIG.REDUCE_POSE_PRECISION)
 
     def serialize_data(data):
-        if data is None or data == []:
+        if not data:
             return None
 
         if hasattr(data[0], 'category_name') and hasattr(data[0], 'score'):
@@ -147,7 +146,7 @@ def estimate_poses():
 
             annotation_path = save_path / f'{in_path.stem}'
             if not CONFIG.FORCE_POSE_ANNOTATION:
-                if pose_scribe.all_selected_exist(annotation_path):
+                if pose_scribe.all_selected_types_exist(annotation_path):
                     annotation_path = None
 
             if out_video_path is None and annotation_path is None:
