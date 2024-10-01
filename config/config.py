@@ -13,6 +13,7 @@ class ProjectConfig:
     LOG_FILE_SIZE = 2*1024*1024
     LOG_FILE_COUNT = 10
     REQUESTS_PER_SECOND = 5
+    SYSTEM_SHUTDOWN_ON_END = False
 
     # ================================================ SCRAPING OPTIONS ================================================
     SCRAPING_ENABLED = False                    # whether to perform data scraping
@@ -36,7 +37,7 @@ class ProjectConfig:
         'base_options': BaseOptions(
             model_asset_path='D:/Lin KPI/diploma/usl-diploma/models/holistic/holistic_landmarker.task'),
         'running_mode': VisionTaskRunningMode.VIDEO,    # don't change
-        'min_face_detection_confidence' : 0.5,
+        'min_face_detection_confidence' : 0.4,
         'min_face_suppression_threshold': 0.5,
         'min_face_landmarks_confidence' : 0.9,
         'min_pose_detection_confidence' : 0.9,
@@ -62,6 +63,8 @@ class ProjectConfig:
     POSE_ANNOTATION_ENABLED = True      # whether to save pose landmarks
     FORCE_POSE_ANNOTATION = True        # force pose estimation, even if the respective annotation file already exists
     REDUCE_POSE_PRECISION = None        # None or int to pass to the round function
+    MERGE_POSES_TO_ONE_ARCHIVE = True   # compress all pose annotations to one list of pose annotation lists
+
     SELECTED_POSE_ANNOTATIONS = {       # only selected annotations will be saved
         'face_blendshapes'              : True,
         'face_landmarks'                : False,
@@ -73,14 +76,12 @@ class ProjectConfig:
         'right_hand_world_landmarks'    : True,
     }
 
-    POSE_ANNOTATION_TYPES = {   # annotations are written to each selected file type
-        '.json': False,
-        '.json.pkl': False,
-        '.csv': False,
-        '.csv.pkl': True
+    POSE_ANNOTATION_FILE_TYPES = {      # annotations are written to each selected file type
+        '.json'     : False,
+        '.json.pkl' : False,
+        '.csv'      : False,
+        '.csv.pkl'  : True
     }
-
-    COMPRESS_TO_ONE_ARCHIVE = True      # compress all pose annotations to one list of pose annotation lists
 
     # ================================================= MODEL TRAINING =================================================
     TRAIN_INTERPRETER = True
