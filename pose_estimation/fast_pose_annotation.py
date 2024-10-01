@@ -1,5 +1,6 @@
 import pandas as pd
 from util.path_resolver import PATH_RESOLVER as REPATH
+from util.global_logger import GLOBAL_LOGGER as LOG
 from config.config import CONFIG
 
 
@@ -14,6 +15,7 @@ def fast_annotate():
 
     files = ['dactyl.csv', 'words.csv', 'words_clean.csv']
     for file in files:
+        LOG.info(f'Annotating pose estimation files to {file}')
         annot_file = REPATH.ANNOTATION_DIR / file
         df = pd.read_csv(annot_file, delimiter=';')
 
@@ -24,6 +26,7 @@ def fast_annotate():
             df[column_name] = df['local_path'].apply(annotation_pather, args=(file_type, ))
 
         df.to_csv(annot_file, index=False, sep=';')
+        LOG.info(f'Saved {file}')
 
 
 if __name__ == '__main__':

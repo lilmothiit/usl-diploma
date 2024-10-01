@@ -1,5 +1,4 @@
-import gzip
-import msgpack
+import pickle
 import pandas as pd
 
 from util.path_resolver import PATH_RESOLVER as REPATH
@@ -59,7 +58,7 @@ def pose_postprocessing():
     words = []
     poses = []
     lengths = []
-    for word, path in zip(annotation['word'], annotation['annotation_path']):
+    for word, path in zip(annotation['word'], annotation['annotation_csv_pkl']):
         LOG.info(f'Post-processing {path}')
         parsed = pose_parser(REPATH.PROJECT_ROOT / path)
         if len(parsed) > 0:
@@ -75,13 +74,10 @@ def pose_postprocessing():
         'length': lengths
     }
 
-    output_file = REPATH.WORD_POSE_DIR / '000000_full.msgpack.gz'
+    output_file = REPATH.POSE_DIR / 'full.pkl'
     LOG.info(f'Saving poses to {output_file}')
-    with gzip.open(output_file, 'wb') as f:
-        packed_data = msgpack.packb(full_data)
-        f.write(packed_data)
-        LOG.info(f'Saved file of size {len(packed_data)}')
-        print()
+    with open(output_file, 'wb') as f:
+        pickle.dump(full_data)
 
 
 if __name__ == '__main__':

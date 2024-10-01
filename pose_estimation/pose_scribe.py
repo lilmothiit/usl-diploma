@@ -78,13 +78,16 @@ class PoseScribe:
 
         data.to_csv(csv_buffer, index=False)
         with open(path, 'wb') as f:
+            csv_buffer.seek(0)
             pickle.dump(csv_buffer, f)
 
     @staticmethod
     def _csv_pickle_reader(path):
         try:
             with open(path, 'rb') as f:
-                return pd.read_csv(pickle.load(f))
+                csv_buffer = pickle.load(f)
+            csv_buffer.seek(0)
+            return pd.read_csv(csv_buffer)
         except ValueError as e:
             LOG.error(e)
             return None
