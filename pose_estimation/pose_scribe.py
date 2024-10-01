@@ -84,7 +84,7 @@ class PoseScribe:
     def _csv_pickle_reader(path):
         try:
             with open(path, 'rb') as f:
-                return pickle.load(f)
+                return pd.read_csv(pickle.load(f))
         except ValueError as e:
             LOG.error(e)
             return None
@@ -104,7 +104,7 @@ class PoseScribe:
     }
 
     def write(self, data, path: Path):
-        for file_type, perform_write in CONFIG.POSE_ANNOTATION_TYPES.items():
+        for file_type, perform_write in CONFIG.POSE_ANNOTATION_FILE_TYPES.items():
             if not perform_write:
                 continue
 
@@ -115,28 +115,40 @@ class PoseScribe:
             self.writers[file_type](data, typed_path)
 
     def read(self, path):
+        def _typed_read(t_path, f_type=None):
+            if not REPATH.exists(t_path):
+                LOG.error(f"Pose annotation does not exists: {t_path}")
+                return
+
+            if f_type is None:
+                f_type = ''.join(t_path.suffixes)
+            if f_type not in self.readers:
+                LOG.error(f"Pose scribe cannot handle file type {f_type}")
+                return
+
+            return self.readers[f_type](path)
+
         path = Path(path)
-
-        if not REPATH.exists(path):
-            LOG.error(f"Pose annotation does not exists: {path}")
-            return
-
-        file_type = ''.join(path.suffixes)
-        if file_type not in self.readers:
-            LOG.error(f"Pose scribe cannot handle file type {file_type}")
-            return
-
-        return self.readers[file_type](path)
+        if not path.suffixes:
+            files_dict = {}
+            for file_type, perform_read in CONFIG.POSE_ANNOTATION_FILE_TYPES.items():
+                if not perform_read:
+                    continue
+                typed_path = path.parent / (path.name + file_type)
+                files_dict[file_type] = _typed_read(typed_path, file_type)
+            return files_dict
+        else:
+            return _typed_read(path)
 
     @staticmethod
-    def all_selected_exist(untyped_path):
-        type_existance = []
-        for file_type, perform_write in CONFIG.POSE_ANNOTATION_TYPES.items():
+    def all_selected_types_exist(path):
+        type_existence = []
+        for file_type, perform_write in CONFIG.POSE_ANNOTATION_FILE_TYPES.items():
             if not perform_write:
                 continue
-            typed_path = untyped_path.parent / (untyped_path.name + file_type)
-            type_existance.append(REPATH.exists(typed_path))
-        return all(type_existance)
+            typed_path = path.parent / (path.name + file_type)
+            type_existence.append(REPATH.exists(typed_path))
+        return all(type_existence)
 
 
 pose_scribe = PoseScribe()
