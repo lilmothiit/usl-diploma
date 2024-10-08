@@ -83,6 +83,9 @@ class ProjectConfig:
         '.csv.pkl'  : True
     }
 
+    # ================================================== TRANSLATION ==================================================
+    SPACY_MODEL_NAME = 'uk_core_news_trf'
+
     # ================================================= MODEL TRAINING =================================================
     TRAIN_INTERPRETER = True
     LOAD_INTERPRETER_CHECKPOINT = True
