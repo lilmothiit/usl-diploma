@@ -1,6 +1,5 @@
 import spacy
 from spacy.tokens import Doc, Token
-
 from config.config import CONFIG
 
 
@@ -26,12 +25,15 @@ class Word:
         self.token = token
 
         # changeable properties
-        self.text = getattr(token, "text", None)
-        self.whitespace = getattr(token, "whitespace_", None)
+        self.text = getattr(token, "text", '')
+        self.whitespace = ' '
 
         # tree properties
+        self.parent = None
         self.children_left = []
         self.children_right = []
+        self.is_left_child = False
+        self.is_right_child = False
 
     def __repr__(self):
         return f"<Word: {self.text}>[{len(self.children_left)+len(self.children_right)}]"
@@ -48,31 +50,33 @@ class Sentence:
     """
     def __init__(self, text):
         if isinstance(text, str):
-            doc = nlp(text)
+            self.doc = nlp(text)
         elif isinstance(text, Doc):
-            doc = text
+            self.doc = text
         else:
             raise TypeError(f"Unexpected type {type(text)}. Expected str or spacy.tokens.Doc.")
 
-        self.doc = doc
         self.root = None
-        nodes = {token.i: Word(token) for token in doc}
-        for token in doc:
+        nodes = {token.i: Word(token) for token in self.doc}
+        for token in self.doc:
             if token.head.i == token.i:  # The root node (a token that points to itself)
                 self.root = nodes[token.i]
             else:
                 parent_node = nodes[token.head.i]
                 child_node = nodes[token.i]
+                child_node.parent = parent_node
                 if parent_node.token.i < child_node.token.i:
                     parent_node.children_right.append(child_node)
+                    child_node.is_right_child = True
                 else:
                     parent_node.children_left.append(child_node)
+                    child_node.is_left_child = True
 
     def __repr__(self):
         return f"<Sentence from: {self.doc.text}>"
 
     def __str__(self):
-        return self.string_tree(self.root)
+        return self.string_tree(self.root).strip()
 
     def string_tree(self, node, level=0):
         string = ''

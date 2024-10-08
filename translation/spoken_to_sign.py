@@ -1,8 +1,10 @@
 from translation.tokens import Sentence
+from translation.rules import RULESET
+
 
 if __name__ == '__main__':
     test_texts = [
-        'Я не довіряю людям.',
+        'Я не довіряю людям, але я довіряла людям',
         'Я довіряла людям.',
         'Я довірятиму людям.',
 
@@ -45,4 +47,5 @@ if __name__ == '__main__':
 
     for text in test_texts:
         sent = Sentence(text)
+        RULESET.translate(sent)
         print(sent)
