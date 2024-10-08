@@ -25,10 +25,10 @@ class Word:
         self.token = token
 
         # changeable properties
-        self.text = getattr(token, "text", '')
-        self.whitespace = ' '
+        self.text = getattr(token, "text", '').lower()
 
         # tree properties
+        self.sentence = None
         self.parent = None
         self.children_left = []
         self.children_right = []
@@ -61,10 +61,12 @@ class Sentence:
         for token in self.doc:
             if token.head.i == token.i:  # The root node (a token that points to itself)
                 self.root = nodes[token.i]
+                self.root.sentence = self
             else:
                 parent_node = nodes[token.head.i]
                 child_node = nodes[token.i]
                 child_node.parent = parent_node
+                child_node.sentence = self
                 if parent_node.token.i < child_node.token.i:
                     parent_node.children_right.append(child_node)
                     child_node.is_right_child = True
@@ -82,8 +84,7 @@ class Sentence:
         string = ''
         for child in node.children_left:
             string += self.string_tree(child, level + 1)
-        string += node.text
-        string += node.whitespace if node.whitespace else ''
+        string += node.text + ' '
         for child in node.children_right:
             string += self.string_tree(child, level+1)
         return string
