@@ -12,7 +12,7 @@ class Word:
     Since spacy Token is non-destructive and thus unchangeable,
     this class is specifically meant to be changeable for translation purposes.
     """
-    def __init__(self, token):
+    def __init__(self, token, parent=None):
         if isinstance(token, Token):
             pass
         elif isinstance(token, str):
@@ -28,8 +28,8 @@ class Word:
         self.text = getattr(token, "text", '').lower()
 
         # tree properties
-        self.sentence = None
-        self.parent = None
+        self.parent = parent
+        self.sentence = parent.sentence if self.parent else None
         self.children_left = []
         self.children_right = []
         self.is_left_child = False

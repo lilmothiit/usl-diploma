@@ -5,14 +5,10 @@ from util.global_logger import GLOBAL_LOGGER as LOG
 
 class UA2USL:
     _auxiliary_verbs = {
-        'Pres' : None,
-        'Past' : Word('був'),
-        'Fut' : Word('буде'),
-    }
-    _negating_particle = {
-        'не',
-        'ні',
-        'ані'
+        ('Past', 'Imp') : Word('був'),
+        ('Past', 'Perf') : Word('вже'),
+        ('Fut', 'Imp') : Word('буде'),
+        ('Fut', 'Perf') : Word('потім'),
     }
 
     def _verb_infinitive(self, word):
@@ -22,8 +18,9 @@ class UA2USL:
             word.text = word.token.lemma_
             morph = word.token.morph.to_dict()
             tense = morph['Tense']
-            if self._auxiliary_verbs[tense] is not None:
-                word.children_right.insert(0, self._auxiliary_verbs[tense])
+            aspect = morph['Aspect']
+            if (tense, aspect) in self._auxiliary_verbs:
+                word.children_right.insert(0, self._auxiliary_verbs[(tense, aspect)])
 
     @staticmethod
     def _nominative_case(word):
@@ -32,14 +29,17 @@ class UA2USL:
         if word.token.pos_ in ['NOUN', 'ADJ', 'NUM', 'PRON']:
             word.text = word.token.lemma_
 
-    def _negation_after_negated(self, word):
+    @staticmethod
+    def _negation_after_negated(word):
         if not word.children_left:
             return
-        for part in self._negating_particle:
+        for part in ['не', 'ні', 'ані']:
             for child in word.children_left[:]:
                 if part == child.text.lower():
                     word.children_left.remove(child)
                     word.children_right.insert(0, Word('ні'))
+                    child.is_left_child = False
+                    child.is_right_child = True
 
     @staticmethod
     def _adjectives_after_object(word):
@@ -59,7 +59,9 @@ class UA2USL:
             num = morph['Number']
             if num == 'Plur':
                 word.text = word.token.lemma_
-                word.children_left.append(Word(word.text))
+                child = Word(word.text, parent=word)
+                child.is_left_child = True
+                word.children_left.append(child)
 
     @staticmethod
     def _no_punctuation(word):
@@ -73,7 +75,8 @@ class UA2USL:
             else:
                 LOG.error(f'Word {str(word)} isn\'t assigned as either left or right child. \
                             Can\'t remove punctuation mark.')
-                LOG.warning('Punctuation mark was assigned as root. Something went real wrong with spacy idk??')
+                LOG.warning('Punctuation mark was assigned as root. \
+                             Something went real wrong with spacy idk??')
 
     @staticmethod
     def _remove_parts_of_speech(word):
