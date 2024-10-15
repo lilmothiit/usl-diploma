@@ -13,6 +13,7 @@ class ProjectConfig:
     LOG_FILE_SIZE = 2*1024*1024
     LOG_FILE_COUNT = 10
     REQUESTS_PER_SECOND = 5
+
     SYSTEM_SHUTDOWN_ON_END = False
 
     # ================================================ SCRAPING OPTIONS ================================================
@@ -32,7 +33,7 @@ class ProjectConfig:
     RESUME_FROM_CATEGORY_PAGE = None    # integer page number
 
     # ================================================ POSE  ESTIMATION ================================================
-    POSE_ESTIMATION_ENABLED = True         # whether to perform any pose estimation tasks at all
+    POSE_ESTIMATION_ENABLED = False         # whether to perform any pose estimation tasks at all
     POSE_ESTIMATION_OPTIONS = {
         'base_options': BaseOptions(
             model_asset_path='D:/Lin KPI/diploma/usl-diploma/models/holistic/holistic_landmarker.task'),
@@ -84,10 +85,12 @@ class ProjectConfig:
     }
 
     # ================================================== TRANSLATION ==================================================
+    TRANSLATION_ENABLED = True
     SPACY_MODEL_NAME = 'uk_core_news_trf'
+    LANG_DATASET_DIR_NAME = 'ubertext'
 
     # ================================================= MODEL TRAINING =================================================
-    TRAIN_INTERPRETER = True
+    TRAIN_INTERPRETER = False
     LOAD_INTERPRETER_CHECKPOINT = True
     
     INTERPRETER_EMBEDDING_DIM = 256

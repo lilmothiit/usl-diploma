@@ -1,4 +1,4 @@
-import os
+import bz2
 import csv
 
 from util.global_logger import GLOBAL_LOGGER as LOG
@@ -7,16 +7,16 @@ from util.global_logger import GLOBAL_LOGGER as LOG
 class Annotator:
     DEFAULT_HEADER = ['word', 'part_of_speech', 'category', 'site_path', 'local_path']
 
-    def __init__(self, file_path, header=None):
+    def __init__(self, file_path, header=None, delimiter=';'):
         if header is None:
             header = self.DEFAULT_HEADER
 
         self.file_path = file_path
         self.csv_file = open(self.file_path, 'a', newline='', encoding='utf-8')
-        self.writer = csv.writer(self.csv_file, delimiter=';')
+        self.writer = csv.writer(self.csv_file, delimiter=delimiter)
 
         # if the opened file is empty, write the header row
-        with open(self.file_path, 'r') as file_obj:
+        with open(self.file_path, 'r', encoding='utf-8') as file_obj:
             if not file_obj.read(1):
                 self.writer.writerow(header)
 
@@ -36,5 +36,5 @@ class Annotator:
             self.writer.writerow([word, part_of_speech, category, site_path, local_path])
 
     def __del__(self):
-        if self.csv_file:
+        if hasattr(self, 'csv_file'):
             self.csv_file.close()

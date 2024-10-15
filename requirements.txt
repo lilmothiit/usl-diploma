@@ -4,5 +4,5 @@ pymediainfo~=6.1.0
 mediapipe~=0.10.14
 opencv-python~=4.10.0
 torch~=2.3.0+cu121
-spacy==3.7.4
+spacy==3.7.5
 dearpygui==1.11.1

@@ -12,6 +12,7 @@ class PathResolver:
     PROJECT_ROOT = Path(__file__).resolve().parent.parent
     LOG_DIR = PROJECT_ROOT / 'logs'
     DATA_DIR = PROJECT_ROOT / 'data' / CONFIG.LANG_ALIAS
+
     ANNOTATION_DIR = DATA_DIR / 'annotation'
     RAW_DATA_DIR = DATA_DIR / 'raw'
     POSE_DATA_DIR = DATA_DIR / 'pose'
@@ -19,6 +20,8 @@ class PathResolver:
     DACTYL_POSE_DIR = POSE_DATA_DIR / 'dactyl'
     WORD_RAW_DIR = RAW_DATA_DIR / 'words'
     WORD_POSE_DIR = POSE_DATA_DIR / 'words'
+
+    LANG_DATASET_DIR = DATA_DIR / CONFIG.LANG_DATASET_DIR_NAME
 
     MODEL_DIR = PROJECT_ROOT / 'models' / CONFIG.LANG_ALIAS
     INTERPRETER_DIR = MODEL_DIR / 'interpreter'

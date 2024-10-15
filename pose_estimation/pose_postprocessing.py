@@ -58,6 +58,7 @@ def pose_postprocessing():
     words = []
     poses = []
     lengths = []
+
     for word, path in zip(annotation['word'], annotation['annotation_csv_pkl']):
         LOG.info(f'Post-processing {path}')
         parsed = pose_parser(REPATH.PROJECT_ROOT / path)
@@ -77,7 +78,7 @@ def pose_postprocessing():
     output_file = REPATH.POSE_DIR / 'full.pkl'
     LOG.info(f'Saving poses to {output_file}')
     with open(output_file, 'wb') as f:
-        pickle.dump(full_data)
+        pickle.dump(full_data, f)
 
 
 if __name__ == '__main__':
