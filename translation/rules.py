@@ -3,6 +3,22 @@ from config.config import CONFIG
 from util.global_logger import GLOBAL_LOGGER as LOG
 
 
+class Lemmatizer:
+    @staticmethod
+    def translate(self, sentence):
+        def _translate_word(word):
+            children_left_copy = word.children_left[:]
+            children_right_copy = word.children_right[:]
+            for child in children_left_copy:
+                _translate_word(child)
+            word.text = word.token.lemma_.lower()
+            for child in children_right_copy:
+                _translate_word(child)
+
+        if sentence.root:
+            _translate_word(sentence.root)
+
+
 class UA2USL:
     _auxiliary_verbs = {
         ('Past', 'Imp')  : Word('був'),
@@ -54,8 +70,6 @@ class UA2USL:
         if not hasattr(word.token, 'pos_') or not hasattr(word.token, 'lemma_'):
             return
         word.text = word.token.lemma_
-        if word.token.lemma_ == 'рок':
-            word.text = "рік"
         if '.' in word.text and not word.token.is_punct:
             word.text = Word(word.token.norm_).token.lemma_
 
@@ -116,14 +130,14 @@ class UA2USL:
             return
         pron_type = morph['PronType']
         if pron_type in ['Int']:
-            if word.is_left_child:
-                word.parent.children_left.remove(word)
-                word.sentence.root.children_right.append(Word(word.text, parent=word.sentence.root))
-            elif word.is_right_child:
-                word.parent.children_right.remove(word)
-                word.sentence.root.children_right.append(Word(word.text, parent=word.sentence.root))
-            else:
+            if word is word.sentence.root:
                 word.sentence.root_at_end = True
+            else:
+                if word.is_left_child:
+                    word.parent.children_left.remove(word)
+                if word.is_right_child:
+                    word.parent.children_right.remove(word)
+                word.sentence.root.children_right.append(Word(word.text, parent=word.sentence.root))
 
     def translate(self, sentence):
         def _rule_order(word):
@@ -159,6 +173,5 @@ class UA2USL:
 RULESETS = {
     'uk.ua' : UA2USL
 }
-RULESET = RULESETS[CONFIG.LANG_ALIAS]() if CONFIG.LANG_ALIAS in RULESETS else None
-if not RULESET:
-    raise ValueError(f'No ruleset defined for {CONFIG.LANG_ALIAS}')
+RULESET = RULESETS[CONFIG.LANG_ALIAS]() if CONFIG.LANG_ALIAS in RULESETS else Lemmatizer()
+LEMMATIZER = Lemmatizer()

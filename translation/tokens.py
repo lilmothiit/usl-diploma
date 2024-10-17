@@ -1,10 +1,6 @@
 import spacy
 from spacy.tokens import Doc, Token
-from config.config import CONFIG
-
-
-spacy.require_gpu()
-nlp = spacy.load(CONFIG.SPACY_MODEL_NAME, disable=['senter', 'ner'])
+from translation.nlp import nlp
 
 
 class Word:
