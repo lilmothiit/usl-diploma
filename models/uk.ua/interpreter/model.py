@@ -6,7 +6,10 @@ class PoseModel(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim, output_dim):
         super(PoseModel, self).__init__()
 
+        self.vocab_size = vocab_size
+        self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
+        self.output_dim = output_dim
 
         # Word embedding layer
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
