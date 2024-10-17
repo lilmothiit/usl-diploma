@@ -52,7 +52,7 @@ def train_interpreter():
 
     if not REPATH.exists(save_path):
         save_path.mkdir(parents=True, exist_ok=True)
-    else:
+    if REPATH.exists(save_path / 'checkpoint.pth'):
         checkpoint = torch.load(save_path / f'checkpoint.pth')
 
         model.load_state_dict(checkpoint['model_state_dict'])
