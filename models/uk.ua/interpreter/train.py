@@ -107,10 +107,10 @@ def train_interpreter():
     for epoch in range(load_epoch, num_epochs):
         train_loss = train()
         valid_loss = valid()
-        if len(valid_losses) > 0 and valid_loss < min(valid_losses):
-            train_losses.append(train_loss)
-            valid_losses.append(valid_loss)
 
+        LOG.info(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss}, Validation Loss: {valid_loss}")
+
+        if len(valid_losses) > 0 and valid_loss < min(valid_losses):
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -120,7 +120,8 @@ def train_interpreter():
                 'valid_losses': valid_losses
             }, save_path / f'checkpoint.pth')
 
-        LOG.info(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss}, Validation Loss: {valid_loss}")
+        train_losses.append(train_loss)
+        valid_losses.append(valid_loss)
 
         scheduler.step(train_loss)
         current_lr = optimizer.param_groups[0]['lr']
