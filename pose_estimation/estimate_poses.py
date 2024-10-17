@@ -116,6 +116,17 @@ def serialize_holistic_results(frames):
     return [serialize_frame(frame) for frame in frames]
 
 
+def reevaluate_poses(df):
+    selection_path = REPATH.ANNOTATION_DIR / 'words_selected.csv'
+    if not REPATH.exists(selection_path):
+        return df
+
+    selection_df = pd.read_csv(selection_path, encoding='utf-8', delimiter=';')
+    selected_df = df[df['word'].isin(selection_df['word'].to_list())]
+
+    return selected_df
+
+
 def estimate_poses():
     if not (CONFIG.POSE_ESTIMATION_SOURCE['dactyl'] or CONFIG.POSE_ESTIMATION_SOURCE['words']):
         LOG.error("No pose estimation sources were selected")
@@ -130,6 +141,7 @@ def estimate_poses():
     if dactyl is not None:
         combined.append((dactyl, REPATH.DACTYL_POSE_DIR))
     if words is not None:
+        words = reevaluate_poses(words)
         combined.append((words, REPATH.WORD_POSE_DIR))
 
     out_video_path = None
