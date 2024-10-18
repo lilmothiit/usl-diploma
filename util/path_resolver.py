@@ -24,8 +24,8 @@ class PathResolver:
     LANG_DATASET_DIR = DATA_DIR / CONFIG.LANG_DATASET_DIR_NAME
 
     MODEL_DIR = PROJECT_ROOT / 'models' / CONFIG.LANG_ALIAS
-    INTERPRETER_DIR = MODEL_DIR / 'interpreter'
-    TRANSLATOR_DIR = MODEL_DIR / 'translator'
+    INTERPRETER_DIR = MODEL_DIR / 'interpreter' / 'checkpoints'
+    TRANSLATOR_DIR = MODEL_DIR / 'translator' / 'checkpoints'
 
     def __init__(self):
         for attr in dir(self):

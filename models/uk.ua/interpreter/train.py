@@ -11,7 +11,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
 class EarlyStopper:
-    def __init__(self, patience=5, min_delta=0.001):
+    def __init__(self, patience=5, min_delta=0.0001):
         self.patience = patience
         self.min_delta = min_delta
         self.best_loss = None
@@ -48,12 +48,12 @@ def train_interpreter():
 
     early_stopper = EarlyStopper(patience=5, min_delta=0.001)
 
-    save_path = REPATH.INTERPRETER_DIR / f'{vocab_size}v-{embedding_dim}e-{hidden_dim}h-{output_dim}o'
+    save_path = REPATH.INTERPRETER_DIR / f'{vocab_size}v-{embedding_dim}e-{hidden_dim}h-{output_dim}o.pth'
 
-    if not REPATH.exists(save_path):
-        save_path.mkdir(parents=True, exist_ok=True)
-    if REPATH.exists(save_path / 'checkpoint.pth'):
-        checkpoint = torch.load(save_path / f'checkpoint.pth')
+    if not REPATH.exists(save_path.parent):
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+    if REPATH.exists(save_path):
+        checkpoint = torch.load(save_path)
 
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -118,7 +118,7 @@ def train_interpreter():
                 'scheduler_state_dict': scheduler.state_dict(),
                 'train_losses': train_losses,
                 'valid_losses': valid_losses
-            }, save_path / f'checkpoint.pth')
+            }, save_path)
 
         train_losses.append(train_loss)
         valid_losses.append(valid_loss)
