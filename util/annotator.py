@@ -1,4 +1,3 @@
-import bz2
 import csv
 
 from util.global_logger import GLOBAL_LOGGER as LOG
